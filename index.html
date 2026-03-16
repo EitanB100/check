@@ -520,14 +520,24 @@ async function updateLivePrices() {
             let price = null;
             const outcomeIdx = parseInt(row.dataset.outcome) || 0;
             if (market) {
-                if (market.outcomePrices) {
-                    try {
-                        const pp = typeof market.outcomePrices === 'string' ? JSON.parse(market.outcomePrices) : market.outcomePrices;
-                        price = parseFloat(pp[outcomeIdx]);
-                    } catch(e){}
+                // Priority 1: use bestBid/bestAsk midpoint (most real-time)
+                const bid = parseFloat(market.bestBid);
+                const ask = parseFloat(market.bestAsk);
+                if (!isNaN(bid) && !isNaN(ask) && bid > 0 && ask > 0) {
+                    const yesMid = (bid + ask) / 2;
+                    price = outcomeIdx === 1 ? (1 - yesMid) : yesMid;
                 }
+                // Priority 2: outcomePrices array
                 if (price === null || isNaN(price)) {
-                    // lastTradePrice is for YES (index 0); for NO, use 1 - lastTradePrice
+                    if (market.outcomePrices) {
+                        try {
+                            const pp = typeof market.outcomePrices === 'string' ? JSON.parse(market.outcomePrices) : market.outcomePrices;
+                            price = parseFloat(pp[outcomeIdx]);
+                        } catch(e){}
+                    }
+                }
+                // Priority 3: lastTradePrice
+                if (price === null || isNaN(price)) {
                     const ltp = parseFloat(market.lastTradePrice);
                     price = outcomeIdx === 1 ? (1 - ltp) : ltp;
                 }
