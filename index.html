@@ -88,7 +88,7 @@
         .card-cell{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s;display:flex;flex-direction:column}
         .card-cell:hover{border-color:var(--primary)}
         .card-cell .card-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-        .card-cell .card-stats{font-size:.75rem;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+        .card-cell .card-stats{font-size:.75rem;color:var(--muted);display:flex;gap:6px;flex-wrap:nowrap;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .card-cell .card-stats span{font-weight:600;color:var(--text)}
         .card-cell iframe{width:100%;border:none;display:block}
 
@@ -328,11 +328,11 @@ function setView(v) {
 // ─── ENHANCED TRENDING ───────────────────────────────────
 const TREND_CATEGORIES = {
     'All': null,
-    'Geopolitics': ['geopolitics','middle east','world','israel'],
-    'Politics': ['politics','elections','trump','congress'],
-    'Crypto': ['crypto','bitcoin','ethereum','defi'],
-    'Sports': ['sports','nba','nfl','soccer','football'],
-    'Science': ['science','ai','technology','space'],
+    'Geopolitics': ['geopolitics','middle east','israel','iran','war','conflict','military','nato','sanctions'],
+    'Politics': ['politics','elections','trump','congress','government','legislation','policy'],
+    'Crypto': ['crypto','bitcoin','ethereum','defi','blockchain','solana','nft'],
+    'Sports': ['sports','nba','nfl','soccer','football','tennis','mma','fifa','world cup','baseball','f1'],
+    'Science': ['science','ai','technology','space','climate','energy'],
 };
 let trendData = []; // cached
 let activeTrendCat = 'All';
@@ -438,7 +438,7 @@ function renderTrending() {
                 <div class="tm"><span class="tm-label">Ends</span><span class="tm-value">${endFmt}</span></div>
             </div>
             ${hasContext ? `
-                <div class="trend-context" id="ctx-${idx}">${d.context}</div>
+                <div class="trend-context" id="ctx-${idx}"><em style="display:block;margin-bottom:6px;font-size:.7rem;color:var(--muted);opacity:.7">⚠ Analysis by Polymarket — may reference historical context</em>${d.context}</div>
                 <button class="trend-toggle" onclick="toggleCtx(${idx})">📊 Show Analysis <span id="ctx-arrow-${idx}">▼</span></button>
             ` : ''}
             <div class="trend-card-footer">
