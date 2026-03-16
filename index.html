@@ -245,20 +245,20 @@ async function fetchPositions() {
         }
         console.log('Fetched', data.length, 'positions from Data API');
 
-        // Group by event/category
+        // Group by eventSlug
         const catMap = {};
         for (const pos of data) {
-            // pos fields: asset, market, size, avgPrice, initialValue, currentValue, pnl, percentPnl, outcome, etc.
-            const size = parseFloat(pos.size || pos.currentShares || 0);
+            const size = parseFloat(pos.size || 0);
             if (size <= 0.01) continue; // skip dust
 
-            const slug = pos.market?.slug || pos.slug || pos.asset || '';
-            const title = pos.market?.question || pos.title || pos.question || slug;
-            const eventSlug = pos.market?.eventSlug || pos.eventSlug || '';
-            const outcomeLabel = (pos.outcome || pos.side || 'Yes').toLowerCase();
-            const outcomeIdx = outcomeLabel === 'no' ? 1 : 0;
-            const invested = parseFloat(pos.initialValue || pos.cashFlow || pos.avgPrice * size || 0);
-            const catName = pos.market?.groupItemTitle || eventSlug.split('-').slice(0,2).join(' ') || 'Portfolio';
+            const slug = pos.slug || '';
+            const title = pos.title || slug;
+            const eventSlug = pos.eventSlug || '';
+            const outcomeIdx = pos.outcomeIndex ?? (pos.outcome === 'No' ? 1 : 0);
+            const invested = parseFloat(pos.initialValue || 0);
+
+            // Derive a readable category from eventSlug
+            const catName = eventSlug.split('-').slice(0, 3).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Portfolio';
 
             if (!catMap[catName]) catMap[catName] = [];
             catMap[catName].push({
@@ -272,7 +272,7 @@ async function fetchPositions() {
         }
 
         portfolioConfig = Object.entries(catMap).map(([cat, markets]) => ({
-            category: cat.charAt(0).toUpperCase() + cat.slice(1),
+            category: cat,
             markets: markets
         }));
 
