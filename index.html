@@ -839,20 +839,29 @@
                     const data = await res.json();
                     
                     let price = null;
+                    let market = null;
 
-                    if (data && data.length > 0) {
-                        const market = data[0]; 
-                        
+                    if (Array.isArray(data) && data.length > 0) {
+                        market = data[0]; 
+                    } else if (data && data.events && data.events.length > 0 && data.events[0].markets) {
+                        market = data.events[0].markets[0];
+                    } else if (data && !Array.isArray(data)) {
+                         market = data;
+                    }
+
+                    if (market) {
                         // Parse JSON outcome prices. Index 0 is typically the YES price on binary.
                         if (market.outcomePrices) {
                             try {
-                                const parsedPrices = JSON.parse(market.outcomePrices);
+                                const parsedPrices = (typeof market.outcomePrices === 'string') 
+                                    ? JSON.parse(market.outcomePrices) 
+                                    : market.outcomePrices;
                                 price = parseFloat(parsedPrices[0]);
                             } catch(e){}
                         }
                         
                         if (price === null || isNaN(price)) {
-                            price = market.lastTradePrice;
+                            price = parseFloat(market.lastTradePrice || market.price);
                         }
                     }
 
