@@ -832,17 +832,16 @@
                 if (!marketId || !shares || !invested) return null;
                 
                 try {
-                    // /events?slug=XYZ returns an array of events
-                    const res = await fetch(`https://gamma-api.polymarket.com/events?slug=${marketId}`);
+                    // Fetch directly from markets endpoint
+                    const res = await fetch(`https://gamma-api.polymarket.com/markets?slug=${marketId}`);
                     if (!res.ok) throw new Error("API returned status " + res.status);
                     
                     const data = await res.json();
                     
                     let price = null;
 
-                    // Parse nested events -> markets[0] array
-                    if (data && data.length > 0 && data[0].markets && data[0].markets.length > 0) {
-                        const market = data[0].markets[0]; // main condition
+                    if (data && data.length > 0) {
+                        const market = data[0]; 
                         
                         // Parse JSON outcome prices. Index 0 is typically the YES price on binary.
                         if (market.outcomePrices) {
@@ -850,6 +849,10 @@
                                 const parsedPrices = JSON.parse(market.outcomePrices);
                                 price = parseFloat(parsedPrices[0]);
                             } catch(e){}
+                        }
+                        
+                        if (price === null || isNaN(price)) {
+                            price = market.lastTradePrice;
                         }
                     }
 
