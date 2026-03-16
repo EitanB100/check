@@ -99,6 +99,30 @@
         .bet-details strong {
             color: #2196F3;
         }
+        .profit-loss {
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .profit-loss.positive {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+        }
+        .profit-loss.negative {
+            background-color: rgba(244, 67, 54, 0.15);
+            color: #F44336;
+        }
+        .profit-loss.neutral {
+            background-color: rgba(156, 156, 156, 0.15);
+            color: #9C9C9C;
+        }
+        .pnl-amount {
+            font-weight: 700;
+        }
+        .pnl-percent {
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
         .category {
             margin-bottom: 30px;
         }
@@ -210,12 +234,11 @@
                 <div class="grid">
                     <div class="market-card">
                         <h2>Cuban Regime Falls in 2026?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 9 months</div>
-                            <div><strong>Money Invested:</strong> $100 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $200 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 33% · No 67%</div>
-                            <div><strong>Position:</strong> Bullish on regime change</div>
+                        <div class="bet-details" data-market="cuban-regime-falls-in-2026">
+                            <div><strong>Shares:</strong> 163.0</div>
+                            <div><strong>Amount Invested:</strong> $55.42</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$54.61</span></div>
+                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.82</span> <span class="pnl-percent">(-1.47%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -255,12 +278,11 @@
                 <div class="grid">
                     <div class="market-card">
                         <h2>Will Trump meet with Xi Jinping in March 2026?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 14 days</div>
-                            <div><strong>Money Invested:</strong> $50 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $225 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 22% · No 79%</div>
-                            <div><strong>Position:</strong> Speculative bet on diplomacy</div>
+                        <div class="bet-details" data-market="will-trump-meet-with-xi-jinping-in-march-2026">
+                            <div><strong>Shares:</strong> 22.1</div>
+                            <div><strong>Amount Invested:</strong> $7.07</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$20.22</span></div>
+                            <div class="profit-loss positive"><strong>Unrealized P/L:</strong> <span class="pnl-amount">+$13.15</span> <span class="pnl-percent">(+185.94%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -289,12 +311,11 @@
 
                     <div class="market-card">
                         <h2>Will Trump say "Khamenei" this week? (March 22)</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 6 days</div>
-                            <div><strong>Money Invested:</strong> $25 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $75 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 38% · No 62%</div>
-                            <div><strong>Position:</strong> Short-term media bet</div>
+                        <div class="bet-details" data-market="will-trump-say-khamenei-this-week-march-22">
+                            <div><strong>Shares:</strong> 23.3</div>
+                            <div><strong>Amount Invested:</strong> $10.00</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$12.09</span></div>
+                            <div class="profit-loss positive"><strong>Unrealized P/L:</strong> <span class="pnl-amount">+$2.09</span> <span class="pnl-percent">(+20.93%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -334,12 +355,11 @@
                 <div class="grid">
                     <div class="market-card">
                         <h2>Naim Qassem out as Hezbollah’s secretary-general by March 31, 2026?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 15 days</div>
-                            <div><strong>Money Invested:</strong> $75 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $275 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 27% · No 73%</div>
-                            <div><strong>Position:</strong> Political instability play</div>
+                        <div class="bet-details" data-market="naim-qassem-out-as-hezbollahs-secretary-general-by-march-31">
+                            <div><strong>Shares:</strong> 34.0</div>
+                            <div><strong>Amount Invested:</strong> $10.00</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$9.35</span></div>
+                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.65</span> <span class="pnl-percent">(-6.47%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -368,12 +388,11 @@
 
                     <div class="market-card">
                         <h2>Iran x Israel/US conflict ends by April 15?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 30 days</div>
-                            <div><strong>Money Invested:</strong> $150 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $350 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 31% · No 70%</div>
-                            <div><strong>Position:</strong> Diplomatic resolution bet</div>
+                        <div class="bet-details" data-market="iran-x-israelus-conflict-ends-by-april-15">
+                            <div><strong>Shares:</strong> 30.3</div>
+                            <div><strong>Amount Invested:</strong> $10.00</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$8.48</span></div>
+                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$1.52</span> <span class="pnl-percent">(-15.15%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -402,12 +421,11 @@
 
                     <div class="market-card">
                         <h2>Iran leadership change by March 31?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 15 days</div>
-                            <div><strong>Money Invested:</strong> $200 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $1150 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 16% · No 85%</div>
-                            <div><strong>Position:</strong> High-risk political change</div>
+                        <div class="bet-details" data-market="iran-leadership-change-by-march-31">
+                            <div><strong>Shares:</strong> 58.8</div>
+                            <div><strong>Amount Invested:</strong> $10.00</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$7.94</span></div>
+                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$2.06</span> <span class="pnl-percent">(-20.59%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -436,12 +454,11 @@
 
                     <div class="market-card">
                         <h2>Strait of Hormuz traffic returns to normal by end of April?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 45 days</div>
-                            <div><strong>Money Invested:</strong> $100 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $225 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 31% · No 69%</div>
-                            <div><strong>Position:</strong> Economic normalization bet</div>
+                        <div class="bet-details" data-market="strait-of-hormuz-traffic-returns-to-normal-by-april-30">
+                            <div><strong>Shares:</strong> 27.1</div>
+                            <div><strong>Amount Invested:</strong> $8.66</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$8.66</span></div>
+                            <div class="profit-loss neutral"><strong>Unrealized P/L:</strong> <span class="pnl-amount">$0.00</span> <span class="pnl-percent">(0%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -470,12 +487,11 @@
 
                     <div class="market-card">
                         <h2>Iran leadership change by April 30?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 45 days</div>
-                            <div><strong>Money Invested:</strong> $250 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $375 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 40% · No 61%</div>
-                            <div><strong>Position:</strong> Medium-term political risk</div>
+                        <div class="bet-details" data-market="iran-leadership-change-by-april-30">
+                            <div><strong>Shares:</strong> 19.3</div>
+                            <div><strong>Amount Invested:</strong> $8.32</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$7.64</span></div>
+                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.68</span> <span class="pnl-percent">(-8.14%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -504,12 +520,11 @@
 
                     <div class="market-card">
                         <h2>Iran coup attempt by June 30?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> 105 days</div>
-                            <div><strong>Money Invested:</strong> $300 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> $1150 (if Yes wins)</div>
-                            <div><strong>Current Odds:</strong> Yes 22% · No 78%</div>
-                            <div><strong>Position:</strong> Long-term instability play</div>
+                        <div class="bet-details" data-market="iran-coup-attempt-by-june-30">
+                            <div><strong>Shares:</strong> 21.7</div>
+                            <div><strong>Amount Invested:</strong> $5.00</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$4.78</span></div>
+                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.22</span> <span class="pnl-percent">(-4.35%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -538,12 +553,11 @@
 
                     <div class="market-card">
                         <h2>Iran leadership change by March 13?</h2>
-                        <div class="bet-details">
-                            <div><strong>Time to End:</strong> Expired</div>
-                            <div><strong>Money Invested:</strong> $50 (Yes)</div>
-                            <div><strong>Expected Profit:</strong> N/A (Expired)</div>
-                            <div><strong>Current Odds:</strong> Yes 0% · No 100%</div>
-                            <div><strong>Position:</strong> Lost bet - no change occurred</div>
+                        <div class="bet-details" data-market="iran-leadership-change-by-march-13">
+                            <div><strong>Shares:</strong> 500.0</div>
+                            <div><strong>Amount Invested:</strong> $1.00</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">$0.25</span></div>
+                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.75</span> <span class="pnl-percent">(-75%)</span></div>
                         </div>
                         <script type="application/ld+json">
                         {
@@ -612,6 +626,92 @@
             body.classList.toggle('light-mode');
             toggle.classList.toggle('dark');
             modeText.textContent = body.classList.contains('light-mode') ? 'Light Mode' : 'Dark Mode';
+        });
+
+        // Live Price Updates & P&L Calculation
+        async function updateLivePrices() {
+            const betDetails = document.querySelectorAll('.bet-details');
+            
+            betDetails.forEach(async (detail) => {
+                const marketId = detail.getAttribute('data-market');
+                if (!marketId) return;
+
+                try {
+                    // Fetch live price data from Polymarket API
+                    // This endpoint may need to be adjusted based on Polymarket's actual API
+                    const response = await fetch(`https://api.polymarket.com/markets/${marketId}`, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' }
+                    }).catch(() => null);
+
+                    if (response && response.ok) {
+                        const data = await response.json();
+                        
+                        // Extract current price (last traded price or mid price)
+                        const currentPrice = data.currentPrice || data.lastPrice || null;
+                        
+                        if (currentPrice) {
+                            updatePnL(detail, currentPrice);
+                        }
+                    }
+                } catch (error) {
+                    console.log(`Could not fetch live price for ${marketId}:`, error);
+                }
+            });
+        }
+
+        function updatePnL(detail, currentPrice) {
+            // Get existing data
+            const sharesText = detail.querySelector('div:nth-child(1)')?.textContent;
+            const investedText = detail.querySelector('div:nth-child(2)')?.textContent;
+            
+            // Parse values
+            const shares = parseFloat(sharesText?.match(/[\d.]+/)?.[0] || 0);
+            const invested = parseFloat(investedText?.match(/[\d.]+/)?.[0] || 0);
+            const currentValue = (shares * currentPrice).toFixed(2);
+            const pnlAmount = (currentValue - invested).toFixed(2);
+            const pnlPercent = invested > 0 ? ((pnlAmount / invested) * 100).toFixed(2) : 0;
+
+            // Update current value display
+            const currentValueSpan = detail.querySelector('.current-value');
+            if (currentValueSpan) {
+                currentValueSpan.textContent = `$${currentValue}`;
+            }
+
+            // Update P&L amount and percent
+            const pnlAmountSpan = detail.querySelector('.pnl-amount');
+            const pnlPercentSpan = detail.querySelector('.pnl-percent');
+            const profitLossDiv = detail.querySelector('.profit-loss');
+
+            if (pnlAmountSpan) {
+                pnlAmountSpan.textContent = pnlAmount >= 0 ? `+$${pnlAmount}` : `-$${Math.abs(pnlAmount)}`;
+            }
+
+            if (pnlPercentSpan) {
+                pnlPercentSpan.textContent = pnlPercent >= 0 ? `(+${pnlPercent}%)` : `(${pnlPercent}%)`;
+            }
+
+            // Update color coding
+            if (profitLossDiv) {
+                profitLossDiv.classList.remove('positive', 'negative', 'neutral');
+                if (pnlAmount > 0) {
+                    profitLossDiv.classList.add('positive');
+                } else if (pnlAmount < 0) {
+                    profitLossDiv.classList.add('negative');
+                } else {
+                    profitLossDiv.classList.add('neutral');
+                }
+            }
+        }
+
+        // Attempt to update live prices every 10 seconds
+        // Note: Polymarket API endpoint may vary - adjust URL as needed
+        // This will gracefully fail if the API is unavailable
+        setInterval(updateLivePrices, 10000);
+        
+        // Also try once on page load (after dashboard is visible)
+        window.addEventListener('load', () => {
+            setTimeout(updateLivePrices, 1000);
         });
     </script>
 </body>
