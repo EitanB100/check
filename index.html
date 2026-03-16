@@ -4,209 +4,296 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polymarket Prediction Markets Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --card-bg: #1e1e1e;
-            --border-color: #333;
+            --bg-color: #0b0f19;
+            --text-color: #e2e8f0;
+            --card-bg: #151b2b;
+            --border-color: #1f2937;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --positive: #10b981;
+            --positive-bg: rgba(16, 185, 129, 0.1);
+            --negative: #ef4444;
+            --negative-bg: rgba(239, 68, 68, 0.1);
+            --neutral: #94a3b8;
+            --neutral-bg: rgba(148, 163, 184, 0.1);
         }
+        
         .light-mode {
-            --bg-color: #ffffff;
-            --text-color: #000000;
-            --card-bg: #f9f9f9;
-            --border-color: #ddd;
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --positive: #16a34a;
+            --positive-bg: rgba(22, 163, 74, 0.1);
+            --negative: #dc2626;
+            --negative-bg: rgba(220, 38, 38, 0.1);
+            --neutral: #64748b;
+            --neutral-bg: rgba(100, 116, 139, 0.1);
         }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 24px;
             transition: background-color 0.3s, color 0.3s;
         }
+
         header {
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
         }
-        h1 {
+
+        .header-left h1 {
             margin: 0;
-            font-size: 1.8em;
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
         }
+
         .timer-container {
-            font-size: 0.9em;
-            color: #888;
-            margin-top: 8px;
+            font-size: 0.875rem;
+            color: var(--neutral);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .toggle-container {
-            position: absolute;
-            top: 0px;
-            right: 20px;
+        
+        .timer-container .pulse {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: pulse-animation 2s infinite;
         }
+
+        @keyframes pulse-animation {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
         .toggle {
             display: inline-block;
-            width: 60px;
-            height: 34px;
-            background-color: #ccc;
-            border-radius: 34px;
+            width: 48px;
+            height: 26px;
+            background-color: var(--border-color);
+            border-radius: 26px;
             position: relative;
             cursor: pointer;
             transition: background-color 0.3s;
         }
+        
         .toggle.dark {
-            background-color: #2196F3;
+            background-color: var(--primary);
         }
+        
         .toggle-slider {
             position: absolute;
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             border-radius: 50%;
             transition: transform 0.3s;
         }
-        .toggle.dark .toggle-slider {
-            transform: translateX(26px);
-        }
         
+        .toggle.dark .toggle-slider {
+            transform: translateX(22px);
+        }
+
         .summary-card {
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(76, 175, 80, 0.05) 100%);
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px 24px;
-            margin-bottom: 30px;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
             flex-wrap: wrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .summary-card div {
-            flex: 1;
-            min-width: 200px;
+
+        .summary-stat {
             text-align: center;
-            margin: 8px 0;
+            padding: 8px 16px;
         }
-        .summary-card div span {
-            display: block;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-        }
-        .market-card {
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(33, 150, 243, 0.05) 100%);
-            border: 1px solid rgba(33, 150, 243, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .market-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            border-color: rgba(33, 150, 243, 0.6);
-        }
-        .market-card h2 {
-            font-size: 1.1em;
-            margin: 0 0 12px 0;
-            color: #2196F3;
-        }
-        .bet-details {
-            margin-top: 12px;
-            font-size: 0.85em;
-            line-height: 1.6;
-        }
-        .bet-details div {
+
+        .summary-stat .label {
+            font-size: 0.875rem;
+            color: var(--neutral);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .bet-details strong {
-            color: #2196F3;
-        }
-        .profit-loss {
-            padding: 8px;
-            border-radius: 6px;
             font-weight: 600;
         }
-        .profit-loss.positive, .pnl-positive {
-            background-color: rgba(76, 175, 80, 0.15);
-            color: #4CAF50;
-        }
-        .profit-loss.negative, .pnl-negative {
-            background-color: rgba(244, 67, 54, 0.15);
-            color: #F44336;
-        }
-        .profit-loss.neutral, .pnl-neutral {
-            background-color: rgba(156, 156, 156, 0.15);
-            color: #9C9C9C;
-        }
-        .pnl-amount {
+
+        .summary-stat .value {
+            font-size: 2rem;
             font-weight: 700;
+            letter-spacing: -0.025em;
         }
-        .pnl-percent {
-            opacity: 0.8;
-            font-size: 0.9em;
-        }
+
         .category {
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
+
         .category-header {
             cursor: pointer;
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(33, 150, 243, 0.1) 100%);
-            border: 2px solid rgba(33, 150, 243, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .category-header:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .light-mode .category-header:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .category-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.875rem;
+            color: var(--neutral);
+        }
+
+        .category-content {
+            display: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .category-content.collapsed {
+            display: none;
+        }
+
+        .market-row {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 15px;
+            padding: 20px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s ease;
-            font-size: 1.2em;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .market-row:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .market-info {
+            flex: 1;
+            padding-right: 24px;
+        }
+
+        .market-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+        }
+
+        .market-link {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+        .market-link:hover {
+            text-decoration: underline;
+        }
+
+        .market-stats {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .stat-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 90px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--neutral);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             font-weight: 600;
         }
-        .category-header:hover {
-            background: linear-gradient(135deg, rgba(33, 150, 243, 0.15) 0%, rgba(33, 150, 243, 0.08) 100%);
-            border-color: rgba(33, 150, 243, 0.6);
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 600;
         }
-        .category-header h2 {
-            margin: 0;
+
+        .profit-loss, .pnl-box {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            min-width: 100px;
         }
-        .light-mode .category-header:hover {
-            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.05) 100%);
+        
+        .pnl-amount {
+            font-size: 1.1rem;
         }
-        .category-content {
-            display: none;
+        .pnl-percent {
+            font-size: 0.75rem;
+            opacity: 0.9;
         }
-        .category-content.expanded {
-            display: block;
-        }
-        .arrow {
-            transition: transform 0.3s ease;
-            font-size: 1.2em;
-            color: #2196F3;
-        }
-        .arrow.expanded {
-            transform: rotate(90deg);
-        }
+
+        .positive { background-color: var(--positive-bg); color: var(--positive); }
+        .negative { background-color: var(--negative-bg); color: var(--negative); }
+        .neutral { background-color: var(--neutral-bg); color: var(--neutral); }
+
+        /* Login Screen */
         #login {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background-color: var(--bg-color);
             display: flex;
             justify-content: center;
@@ -216,82 +303,127 @@
         #login.hidden {
             display: none;
         }
-        #login form {
-            text-align: center;
+        #login-card {
             background-color: var(--card-bg);
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        #login-card h2 {
+            margin-top: 0;
+            margin-bottom: 24px;
         }
         #login input {
-            padding: 12px;
-            margin: 20px 0;
-            width: 250px;
+            width: 80%;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            background: var(--bg-color);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--bg-color);
+            border-radius: 8px;
             color: var(--text-color);
-            font-size: 1em;
+            font-family: inherit;
+            font-size: 1rem;
         }
         #login button {
-            padding: 12px 24px;
-            background-color: #2196F3;
+            width: 80%;
+            padding: 12px 16px;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s;
         }
         #login button:hover {
-            background-color: #1976D2;
+            background-color: var(--primary-hover);
         }
         
-        .loading-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Updating Animation */
+        @keyframes flash-update {
+            0% { background-color: rgba(59, 130, 246, 0.2); }
+            100% { background-color: transparent; }
+        }
+        .updated {
+            animation: flash-update 1s ease-out;
+        }
+
+        /* Trending modular grid */
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .trending-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            color: white;
-            z-index: 5;
-            display: none;
-        }
-        .market-card.loading .loading-overlay {
+            padding: 16px;
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
         }
+        .trending-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .trending-card h3 {
+            font-size: 0.95rem;
+            margin: 0 0 12px 0;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
     </style>
 </head>
 <body>
     <div id="login">
-        <form id="login-form">
-            <h2>Polymarket Dashboard</h2>
-            <input type="password" id="password" placeholder="Enter Password" required>
-            <br>
-            <button type="submit">Login</button>
-        </form>
+        <div id="login-card">
+            <form id="login-form">
+                <h2>Access Dashboard</h2>
+                <input type="password" id="password" placeholder="Enter Password" required>
+                <button type="submit">Unlock</button>
+            </form>
+        </div>
     </div>
     
     <div id="dashboard" class="hidden">
         <header>
-            <h1>Prediction Markets Dashboard</h1>
-            <div class="timer-container">
-                Next refresh in: <span id="refresh-timer" style="color: #2196F3; font-weight: bold;">15</span>s
+            <div class="header-left">
+                <h1>Prediction Markets</h1>
+                <div class="timer-container">
+                    <div class="pulse"></div>
+                    Live update in <span id="refresh-timer" style="font-weight: 600; color: var(--text-color); margin-left: 4px;">15</span>s
+                </div>
             </div>
-            <div class="toggle-container">
-                <div style="margin-bottom: 5px; font-size: 0.8em;" id="mode-text">Dark Mode</div>
+            <div class="header-right">
+                <span id="mode-text" style="font-size: 0.875rem; color: var(--neutral); font-weight: 500;">Dark</span>
                 <div class="toggle dark" id="theme-toggle">
                     <div class="toggle-slider"></div>
                 </div>
             </div>
         </header>
 
-        <div id="portfolio-summary" class="summary-card">
-            <div>Total Invested<br><span id="tot-invested">$0.00</span></div>
-            <div>Current Value<br><span id="tot-value">$0.00</span></div>
-            <div>Unrealized P/L<br><span id="tot-pnl" class="pnl-neutral">$0.00 (0.00%)</span></div>
+        <div class="summary-card">
+            <div class="summary-stat">
+                <div class="label">Total Invested</div>
+                <div class="value" id="tot-invested">$0.00</div>
+            </div>
+            <div class="summary-stat">
+                <div class="label">Current Value</div>
+                <div class="value" id="tot-value">$0.00</div>
+            </div>
+            <div class="summary-stat">
+                <div class="label">Unrealized P/L</div>
+                <div class="value neutral" id="tot-pnl">$0.00 <span style="font-size:1rem; opacity:0.8; font-weight:500;">(0.00%)</span></div>
+            </div>
         </div>
 
         <div id="dashboard-content">
@@ -399,12 +531,11 @@
             const container = document.getElementById('dashboard-content');
             container.innerHTML = '';
             
-            // Build fixed portfolio categories
             portfolioConfig.forEach(cat => {
-                container.appendChild(buildCategoryHtml(cat.category, cat.markets, true));
+                container.appendChild(buildCategoryHtml(cat.category, cat.markets));
             });
 
-            // Placeholder for Trending section (rendered after fetch)
+            // Placeholder for Trending section
             const trendingDiv = document.createElement('div');
             trendingDiv.id = 'trending-geopolitics-container';
             container.appendChild(trendingDiv);
@@ -412,61 +543,68 @@
             fetchTrendingGeopolitics();
         }
 
-        function buildCategoryHtml(categoryName, markets, isInvestment = true) {
+        function buildCategoryHtml(categoryName, markets) {
             const catDiv = document.createElement('div');
             catDiv.className = 'category';
+            const catId = categoryName.replace(/\s/g, '');
             
             const header = document.createElement('div');
             header.className = 'category-header';
-            header.onclick = () => toggleCategory(categoryName.replace(/\s/g, ''));
-            header.innerHTML = `<h2>${categoryName}</h2><span class="arrow expanded">▼</span>`;
+            header.onclick = () => {
+                const content = document.getElementById(catId);
+                const arrow = header.querySelector('.arrow');
+                content.classList.toggle('collapsed');
+                arrow.style.transform = content.classList.contains('collapsed') ? 'rotate(-90deg)' : 'rotate(0deg)';
+            };
+            header.innerHTML = `
+                <span class="arrow" style="transform: rotate(0deg);">▼</span>
+                <h2>${categoryName}</h2>
+            `;
             
             const content = document.createElement('div');
-            content.id = categoryName.replace(/\s/g, '');
-            content.className = 'category-content expanded';
-            
-            const grid = document.createElement('div');
-            grid.className = 'grid';
+            content.id = catId;
+            content.className = 'category-content';
 
             markets.forEach(market => {
-                marketDataStore[market.slug] = market; // Save to store for live update lookups
+                marketDataStore[market.slug] = market;
 
-                const card = document.createElement('div');
-                card.className = 'market-card';
-                card.id = `card-${market.slug}`;
-                
-                let detailsHtml = '';
-                if (isInvestment) {
-                    detailsHtml = `
-                        <div class="bet-details" data-market="${market.slug}" data-shares="${market.shares}" data-invested="${market.invested}">
-                            <div><strong>Shares:</strong> ${market.shares.toFixed(1)}</div>
-                            <div><strong>Amount Invested:</strong> $${market.invested.toFixed(2)}</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">Loading...</span></div>
-                            <div class="profit-loss neutral"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-</span> <span class="pnl-percent"></span></div>
-                        </div>
-                    `;
-                } else {
-                    // Trending market view
-                    detailsHtml = `
-                        <div class="bet-details" data-market="${market.slug}">
-                            <div style="justify-content:center; margin-top:10px;">
-                                <a href="${market.link}" target="_blank" style="color: #2196F3; text-decoration: none; font-weight: bold; border: 1px solid #2196F3; padding: 5px 10px; border-radius: 4px;">View on Polymarket</a>
-                            </div>
-                        </div>
-                    `;
-                }
+                const row = document.createElement('div');
+                row.className = 'market-row';
+                row.id = `row-${market.slug}`;
+                row.setAttribute('data-market', market.slug);
+                row.setAttribute('data-shares', market.shares);
+                row.setAttribute('data-invested', market.invested);
 
-                card.innerHTML = `
-                    <h2>${market.title}</h2>
-                    ${detailsHtml}
-                    <div style="position:relative; margin-top:15px; text-align:center;">
-                        <iframe title="${market.title}" src="https://embed.polymarket.com/market?market=${market.slug}&theme=dark&creator=EthanB123&height=300" width="100%" height="300" frameborder="0" allowtransparency="true" style="border-radius: 8px;"></iframe>
+                row.innerHTML = `
+                    <div class="market-info">
+                        <h3 class="market-title">${market.title}</h3>
+                        <a href="${market.link}" class="market-link" target="_blank">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            View on Polymarket
+                        </a>
+                    </div>
+                    <div class="market-stats">
+                        <div class="stat-group">
+                            <span class="stat-label">Shares</span>
+                            <span class="stat-value">${market.shares.toFixed(1)}</span>
+                        </div>
+                        <div class="stat-group">
+                            <span class="stat-label">Invested</span>
+                            <span class="stat-value">$${market.invested.toFixed(2)}</span>
+                        </div>
+                        <div class="stat-group">
+                            <span class="stat-label">Value</span>
+                            <span class="stat-value current-value" style="color:var(--neutral)">...</span>
+                        </div>
+                        <div class="pnl-box neutral profit-loss">
+                            <span class="pnl-amount">-</span>
+                            <span class="pnl-percent"></span>
+                        </div>
                     </div>
                 `;
-                grid.appendChild(card);
+                content.appendChild(row);
             });
             
-            content.appendChild(grid);
             catDiv.appendChild(header);
             catDiv.appendChild(content);
             return catDiv;
@@ -475,13 +613,12 @@
         // --- DYNAMIC GEOPOLITICS FETCH ---
         async function fetchTrendingGeopolitics() {
             try {
-                // Fetch active events from Polymarket. Gamma API limits results so we pull top 50 to find geo.
+                // Fetch events from Gamma API
                 const res = await fetch('https://gamma-api.polymarket.com/events?limit=50&active=true&closed=false');
                 const data = await res.json();
                 
                 const trendingMarkets = [];
                 for (const event of data) {
-                    // check tags for geopolitics, middle east, politics
                     const tags = (event.tags || []).map(t => typeof t === 'object' ? t.id.toLowerCase() : t.toLowerCase());
                     const slugText = (event.slug || "").toLowerCase();
                     const titleText = (event.title || "").toLowerCase();
@@ -491,9 +628,7 @@
                                 || slugText.includes('geopolitics') || titleText.includes('war') || titleText.includes('election');
 
                     if (isGeo && event.markets && event.markets.length > 0) {
-                        const mainMarket = event.markets[0]; // Take the main condition
-                        
-                        // Avoid duplicates if we already hold it
+                        const mainMarket = event.markets[0];
                         if (!Object.keys(marketDataStore).includes(mainMarket.slug)) {
                             trendingMarkets.push({
                                 title: event.title,
@@ -502,15 +637,35 @@
                             });
                         }
                     }
-                    if (trendingMarkets.length >= 4) break; // Display top 4 trending
+                    if (trendingMarkets.length >= 4) break;
                 }
 
                 if (trendingMarkets.length > 0) {
                     const container = document.getElementById('trending-geopolitics-container');
-                    container.innerHTML = '';
-                    container.appendChild(buildCategoryHtml("Trending Geopolitics (Ideas)", trendingMarkets, false));
-                }
+                    
+                    const catDiv = document.createElement('div');
+                    catDiv.className = 'category';
+                    catDiv.innerHTML = `
+                        <div class="category-header">
+                            <h2 style="margin-left:8px;">📈 Trending Geopolitics (Ideas)</h2>
+                        </div>
+                        <div class="trending-grid" id="trending-grid-content"></div>
+                    `;
+                    container.appendChild(catDiv);
 
+                    const grid = document.getElementById('trending-grid-content');
+                    trendingMarkets.forEach(m => {
+                        const card = document.createElement('div');
+                        card.className = 'trending-card';
+                        card.innerHTML = `
+                            <h3>${m.title}</h3>
+                            <a href="${m.link}" class="market-link" target="_blank">
+                                Explore Market →
+                            </a>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
             } catch (err) {
                 console.error("Geopolitics fetch error", err);
             }
@@ -523,6 +678,8 @@
             if (document.getElementById('password').value === correctPassword) {
                 document.getElementById('login').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
+                
+                // Initialize modules
                 renderDashboard();
                 updateLivePrices();
                 startTimer();
@@ -532,34 +689,21 @@
             }
         });
 
-        function toggleCategory(categoryId) {
-            const content = document.getElementById(categoryId);
-            const arrow = content.previousElementSibling.querySelector('.arrow');
-            content.classList.toggle('expanded');
-            
-            if (content.classList.contains('expanded')) {
-                arrow.style.transform = 'rotate(0deg)';
-                arrow.innerHTML = '▼';
-            } else {
-                arrow.style.transform = 'rotate(-90deg)';
-                arrow.innerHTML = '◀';
-            }
-        }
-
         const body = document.body;
         const toggle = document.getElementById('theme-toggle');
         const modeText = document.getElementById('mode-text');
+        
         toggle.addEventListener('click', () => {
             body.classList.toggle('light-mode');
             toggle.classList.toggle('dark');
-            modeText.textContent = body.classList.contains('light-mode') ? 'Light Mode' : 'Dark Mode';
+            modeText.textContent = body.classList.contains('light-mode') ? 'Light' : 'Dark';
         });
 
-        // --- LIVE PRICING & TIMERS ---
+        // --- LIVE PRICING FETCH ---
         function startTimer() {
             setInterval(() => {
                 countdown--;
-                if (countdown < 0) {
+                if (countdown <= 0) {
                     countdown = REFRESH_INTERVAL_SECONDS;
                     updateLivePrices();
                 }
@@ -568,93 +712,109 @@
         }
 
         async function updateLivePrices() {
-            const betDetails = document.querySelectorAll('.bet-details[data-invested]');
+            const marketRows = document.querySelectorAll('.market-row[data-invested]');
             let totalInvested = 0;
             let totalValue = 0;
 
-            // Optional: batch queries. For simplicity we will query each, or use a large graphql filter.
-            for (const detail of betDetails) {
-                const marketId = detail.getAttribute('data-market');
-                const shares = parseFloat(detail.getAttribute('data-shares'));
-                const invested = parseFloat(detail.getAttribute('data-invested'));
+            // Fetch concurrently for speed, but catch errors individually
+            const promises = Array.from(marketRows).map(async (row) => {
+                const marketId = row.getAttribute('data-market');
+                const shares = parseFloat(row.getAttribute('data-shares'));
+                const invested = parseFloat(row.getAttribute('data-invested'));
                 
-                if (!marketId || !shares || !invested) continue;
-                totalInvested += invested;
-
+                if (!marketId || !shares || !invested) return null;
+                
                 try {
-                    const query = `
-                    query {
-                        markets(where: { slug: "${marketId}" }) {
-                            lastPrice
-                        }
-                    }`;
+                    // Fetch directly from Polymarket Gamma Markets API endpoint using slug
+                    const res = await fetch(`https://gamma-api.polymarket.com/markets?slug=${marketId}`);
+                    if (!res.ok) throw new Error("API returned status " + res.status);
                     
-                    const response = await fetch('https://api.polymarket.com/graphql', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                        body: JSON.stringify({ query }),
-                        mode: 'cors'
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.data?.markets?.[0]) {
-                            const market = data.data.markets[0];
-                            const currentPrice = market.lastPrice;
-                            
-                            if (currentPrice !== undefined && currentPrice !== null) {
-                                const marketValue = updatePnL(detail, currentPrice, shares, invested);
-                                if (marketValue !== null) totalValue += marketValue;
-                            } else {
-                                totalValue += invested; // Fallback so total isn't wildly skewed
-                            }
-                        } else {
-                            totalValue += invested;
+                    const data = await res.json();
+                    
+                    // The endpoint returns an array of matching markets (usually length 1)
+                    if (data && data.length > 0) {
+                        const market = data[0];
+                        let price = null;
+                        
+                        // Parse JSON outcome prices. Index 0 is typically the YES price on binary.
+                        if (market.outcomePrices) {
+                            try {
+                                const parsedPrices = JSON.parse(market.outcomePrices);
+                                price = parseFloat(parsedPrices[0]);
+                            } catch(e){}
                         }
-                    } else {
-                        totalValue += invested;
+                        
+                        // Fallback to lastTradePrice if arrays couldn't be parsed
+                        if (price === null || isNaN(price)) {
+                            price = market.lastTradePrice;
+                        }
+
+                        if (price !== null && price !== undefined) {
+                            row.classList.remove('updated');
+                            void row.offsetWidth; // trigger reflow
+                            row.classList.add('updated');
+                            
+                            return { row, price, shares, invested };
+                        }
                     }
                 } catch (error) {
-                    console.error(`Fetch error for ${marketId}`, error);
-                    totalValue += invested;
+                    console.error(`Failed fetching ${marketId}:`, error);
                 }
-            }
+                
+                // If fetch fails, return initial invested value placeholder
+                return { row, price: null, shares, invested };
+            });
+
+            const results = await Promise.all(promises);
+
+            results.forEach(res => {
+                if (!res) return;
+                totalInvested += res.invested;
+                
+                if (res.price !== null) {
+                    const val = updatePnL(res.row, res.price, res.shares, res.invested);
+                    totalValue += val;
+                } else {
+                    totalValue += res.invested; // Neutral fallback
+                }
+            });
             
             updateTotalSummary(totalInvested, totalValue);
         }
 
-        function updatePnL(detail, currentPrice, shares, invested) {
+        function updatePnL(row, currentPrice, shares, invested) {
             const currentValue = shares * currentPrice;
             const pnlAmount = currentValue - invested;
             const pnlPercent = invested > 0 ? (pnlAmount / invested) * 100 : 0;
 
-            const currentValueSpan = detail.querySelector('.current-value');
-            if (currentValueSpan) {
-                currentValueSpan.textContent = `$${currentValue.toFixed(2)}`;
+            const valSpan = row.querySelector('.current-value');
+            if (valSpan) {
+                valSpan.textContent = `$${currentValue.toFixed(2)}`;
+                valSpan.style.color = 'inherit';
             }
 
-            const pnlAmountSpan = detail.querySelector('.pnl-amount');
-            const pnlPercentSpan = detail.querySelector('.pnl-percent');
-            const profitLossDiv = detail.querySelector('.profit-loss');
+            const pnlSpan = row.querySelector('.pnl-amount');
+            const pctSpan = row.querySelector('.pnl-percent');
+            const pnlBox = row.querySelector('.pnl-box');
 
-            if (pnlAmountSpan) {
+            if (pnlSpan) {
                 const sign = pnlAmount >= 0 ? '+' : '';
-                pnlAmountSpan.textContent = `${sign}$${pnlAmount.toFixed(2)}`;
+                pnlSpan.textContent = `${sign}$${Math.abs(pnlAmount).toFixed(2)}`;
             }
 
-            if (pnlPercentSpan) {
+            if (pctSpan) {
                 const sign = pnlPercent >= 0 ? '+' : '';
-                pnlPercentSpan.textContent = `(${sign}${pnlPercent.toFixed(2)}%)`;
+                pctSpan.textContent = `(${sign}${Math.abs(pnlPercent).toFixed(2)}%)`;
             }
 
-            if (profitLossDiv) {
-                profitLossDiv.classList.remove('positive', 'negative', 'neutral');
+            if (pnlBox) {
+                pnlBox.classList.remove('positive', 'negative', 'neutral');
                 if (pnlAmount > 0.01) {
-                    profitLossDiv.classList.add('positive');
+                    pnlBox.classList.add('positive');
                 } else if (pnlAmount < -0.01) {
-                    profitLossDiv.classList.add('negative');
+                    pnlBox.classList.add('negative');
                 } else {
-                    profitLossDiv.classList.add('neutral');
+                    pnlBox.classList.add('neutral');
                 }
             }
             return currentValue;
@@ -667,18 +827,12 @@
             document.getElementById('tot-invested').textContent = `$${invested.toFixed(2)}`;
             document.getElementById('tot-value').textContent = `$${value.toFixed(2)}`;
             
-            const pnlSpan = document.getElementById('tot-pnl');
+            const pnlBox = document.getElementById('tot-pnl');
             const sign = pnl >= 0 ? '+' : '';
-            pnlSpan.textContent = `${sign}$${pnl.toFixed(2)} (${sign}${pnlPercent.toFixed(2)}%)`;
             
-            pnlSpan.className = '';
-            if (pnl > 0.01) {
-                pnlSpan.classList.add('pnl-positive');
-            } else if (pnl < -0.01) {
-                pnlSpan.classList.add('pnl-negative');
-            } else {
-                pnlSpan.classList.add('pnl-neutral');
-            }
+            pnlBox.innerHTML = `${sign}$${Math.abs(pnl).toFixed(2)} <span style="font-size:1rem; opacity:0.8; font-weight:500;">(${sign}${Math.abs(pnlPercent).toFixed(2)}%)</span>`;
+            
+            pnlBox.className = 'value ' + (pnl > 0.01 ? 'positive' : (pnl < -0.01 ? 'negative' : 'neutral'));
         }
     </script>
 </body>
