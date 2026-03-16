@@ -134,6 +134,8 @@
             <form id="login-form">
                 <h2>Access Dashboard</h2>
                 <input type="password" id="password" placeholder="Enter Password" required>
+                <input type="text" id="wallet-input" placeholder="Wallet address (0x…) — optional" style="font-size:.82rem">
+                <p style="font-size:.7rem;color:var(--muted);margin:-8px 0 12px;opacity:.8">Enter your Polymarket wallet to auto-sync positions.<br>Stored locally in your browser only — never uploaded.</p>
                 <button type="submit">Unlock</button>
             </form>
         </div>
@@ -201,7 +203,7 @@ async function proxyFetch(url) {
 
 // ─── CONFIG ──────────────────────────────────────────────
 // outcome: 0 = YES shares, 1 = NO shares
-const portfolioConfig = [
+const FALLBACK_CONFIG = [
     {
         category: "Cuba",
         markets: [
@@ -228,6 +230,58 @@ const portfolioConfig = [
         ]
     }
 ];
+
+let portfolioConfig = FALLBACK_CONFIG;
+let walletAddress = localStorage.getItem('pm_wallet') || '';
+
+// Fetch live positions from Polymarket Data API
+async function fetchPositions() {
+    if (!walletAddress) return false;
+    try {
+        const data = await proxyFetch('https://data-api.polymarket.com/positions?user=' + walletAddress);
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            console.warn('No positions found for wallet', walletAddress);
+            return false;
+        }
+        console.log('Fetched', data.length, 'positions from Data API');
+
+        // Group by event/category
+        const catMap = {};
+        for (const pos of data) {
+            // pos fields: asset, market, size, avgPrice, initialValue, currentValue, pnl, percentPnl, outcome, etc.
+            const size = parseFloat(pos.size || pos.currentShares || 0);
+            if (size <= 0.01) continue; // skip dust
+
+            const slug = pos.market?.slug || pos.slug || pos.asset || '';
+            const title = pos.market?.question || pos.title || pos.question || slug;
+            const eventSlug = pos.market?.eventSlug || pos.eventSlug || '';
+            const outcomeLabel = (pos.outcome || pos.side || 'Yes').toLowerCase();
+            const outcomeIdx = outcomeLabel === 'no' ? 1 : 0;
+            const invested = parseFloat(pos.initialValue || pos.cashFlow || pos.avgPrice * size || 0);
+            const catName = pos.market?.groupItemTitle || eventSlug.split('-').slice(0,2).join(' ') || 'Portfolio';
+
+            if (!catMap[catName]) catMap[catName] = [];
+            catMap[catName].push({
+                title: title,
+                slug: slug,
+                link: 'https://polymarket.com/event/' + eventSlug,
+                shares: size,
+                invested: Math.abs(invested),
+                outcome: outcomeIdx
+            });
+        }
+
+        portfolioConfig = Object.entries(catMap).map(([cat, markets]) => ({
+            category: cat.charAt(0).toUpperCase() + cat.slice(1),
+            markets: markets
+        }));
+
+        return true;
+    } catch(e) {
+        console.error('Failed to fetch positions:', e);
+        return false;
+    }
+}
 
 // ─── STATE ───────────────────────────────────────────────
 let marketDataStore = {};
@@ -468,14 +522,36 @@ function toggleCtx(idx) {
 }
 
 // ─── AUTH ────────────────────────────────────────────────
-document.getElementById('login-form').addEventListener('submit', e => {
+document.getElementById('login-form').addEventListener('submit', async e => {
     e.preventDefault();
-    if (document.getElementById('password').value === 'IWonULoseBro7') {
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('dashboard').classList.remove('hidden');
-        render(); updateLivePrices(); startTimer();
-    } else { alert('Incorrect password.'); document.getElementById('password').value=''; }
+    if (document.getElementById('password').value !== 'IWonULoseBro7') {
+        alert('Incorrect password.'); document.getElementById('password').value = '';
+        return;
+    }
+
+    // Save wallet address if provided
+    const walletInput = document.getElementById('wallet-input').value.trim();
+    if (walletInput && walletInput.startsWith('0x')) {
+        walletAddress = walletInput;
+        localStorage.setItem('pm_wallet', walletAddress);
+    }
+
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+
+    // Try to fetch live positions from wallet
+    if (walletAddress) {
+        document.getElementById('dashboard-content').innerHTML = '<p style="padding:20px;color:var(--muted)">🔄 Syncing portfolio from Polymarket…</p>';
+        const ok = await fetchPositions();
+        if (ok) console.log('Portfolio synced from wallet:', walletAddress);
+        else console.warn('Falling back to hardcoded portfolio config');
+    }
+
+    render(); updateLivePrices(); startTimer(); fetchTrending();
 });
+
+// Pre-fill wallet if saved
+if (walletAddress) document.getElementById('wallet-input').value = walletAddress;
 document.getElementById('theme-toggle').addEventListener('click', () => {
     document.body.classList.toggle('light-mode');
     document.getElementById('theme-toggle').classList.toggle('dark');
