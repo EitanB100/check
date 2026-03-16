@@ -28,13 +28,20 @@
         header {
             text-align: center;
             margin-bottom: 20px;
+            position: relative;
         }
         h1 {
             margin: 0;
+            font-size: 1.8em;
+        }
+        .timer-container {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 8px;
         }
         .toggle-container {
             position: absolute;
-            top: 20px;
+            top: 0px;
             right: 20px;
         }
         .toggle {
@@ -63,6 +70,32 @@
         .toggle.dark .toggle-slider {
             transform: translateX(26px);
         }
+        
+        .summary-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(76, 175, 80, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .summary-card div {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            margin: 8px 0;
+        }
+        .summary-card div span {
+            display: block;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+        
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -75,6 +108,8 @@
             padding: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
         .market-card:hover {
             transform: translateY(-4px);
@@ -104,15 +139,15 @@
             border-radius: 6px;
             font-weight: 600;
         }
-        .profit-loss.positive {
+        .profit-loss.positive, .pnl-positive {
             background-color: rgba(76, 175, 80, 0.15);
             color: #4CAF50;
         }
-        .profit-loss.negative {
+        .profit-loss.negative, .pnl-negative {
             background-color: rgba(244, 67, 54, 0.15);
             color: #F44336;
         }
-        .profit-loss.neutral {
+        .profit-loss.neutral, .pnl-neutral {
             background-color: rgba(156, 156, 156, 0.15);
             color: #9C9C9C;
         }
@@ -183,548 +218,468 @@
         }
         #login form {
             text-align: center;
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         #login input {
-            padding: 10px;
-            margin: 10px;
+            padding: 12px;
+            margin: 20px 0;
+            width: 250px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background-color: var(--card-bg);
+            border-radius: 6px;
+            background-color: var(--bg-color);
             color: var(--text-color);
+            font-size: 1em;
         }
         #login button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background-color: #2196F3;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
         }
         #login button:hover {
             background-color: #1976D2;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            color: white;
+            z-index: 5;
+            display: none;
+        }
+        .market-card.loading .loading-overlay {
+            display: flex;
         }
     </style>
 </head>
 <body>
     <div id="login">
         <form id="login-form">
-            <h2>Enter Password</h2>
-            <input type="password" id="password" placeholder="Password" required>
+            <h2>Polymarket Dashboard</h2>
+            <input type="password" id="password" placeholder="Enter Password" required>
+            <br>
             <button type="submit">Login</button>
         </form>
     </div>
+    
     <div id="dashboard" class="hidden">
         <header>
-            <h1>Polymarket Prediction Markets Dashboard</h1>
+            <h1>Prediction Markets Dashboard</h1>
+            <div class="timer-container">
+                Next refresh in: <span id="refresh-timer" style="color: #2196F3; font-weight: bold;">15</span>s
+            </div>
             <div class="toggle-container">
-                <span id="mode-text">Dark Mode</span>
+                <div style="margin-bottom: 5px; font-size: 0.8em;" id="mode-text">Dark Mode</div>
                 <div class="toggle dark" id="theme-toggle">
                     <div class="toggle-slider"></div>
                 </div>
             </div>
         </header>
 
-        <!-- Cuba Category -->
-        <div class="category">
-            <div class="category-header" onclick="toggleCategory('cuba')">
-                <h2>Cuba</h2>
-                <span class="arrow">▶</span>
-            </div>
-            <div id="cuba" class="category-content">
-                <div class="grid">
-                    <div class="market-card">
-                        <h2>Cuban Regime Falls in 2026?</h2>
-                        <div class="bet-details" data-market="cuban-regime-falls-in-2026" data-shares="163.0" data-invested="55.42">
-                            <div><strong>Shares:</strong> 163.0</div>
-                            <div><strong>Amount Invested:</strong> $55.42</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$56.24</span></div>
-                            <div class="profit-loss positive"><strong>Unrealized P/L:</strong> <span class="pnl-amount">+$0.82</span> <span class="pnl-percent">(+1.47%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Cuban regime falls in 2026?",
-                          "description": "Prediction market: Yes 33% · No 67% on Polymarket.",
-                          "url": "https://polymarket.com/event/cuban-regime-falls-in-2026",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-cuban-regime-falls-in-2026" aria-label="Polymarket prediction market: Cuban regime falls in 2026?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Cuban regime falls in 2026? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=cuban-regime-falls-in-2026&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/cuban-regime-falls-in-2026" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Cuban regime falls in 2026?</strong><br>
-                                Yes 33% · No 67%<br>
-                                <a href="https://polymarket.com/event/cuban-regime-falls-in-2026">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-                </div>
-            </div>
+        <div id="portfolio-summary" class="summary-card">
+            <div>Total Invested<br><span id="tot-invested">$0.00</span></div>
+            <div>Current Value<br><span id="tot-value">$0.00</span></div>
+            <div>Unrealized P/L<br><span id="tot-pnl" class="pnl-neutral">$0.00 (0.00%)</span></div>
         </div>
 
-        <!-- Trump Category -->
-        <div class="category">
-            <div class="category-header" onclick="toggleCategory('trump')">
-                <h2>Trump</h2>
-                <span class="arrow">▶</span>
-            </div>
-            <div id="trump" class="category-content">
-                <div class="grid">
-                    <div class="market-card">
-                        <h2>Will Trump meet with Xi Jinping in March 2026?</h2>
-                        <div class="bet-details" data-market="will-trump-meet-with-xi-jinping-in-march-2026" data-shares="22.1" data-invested="7.07">
-                            <div><strong>Shares:</strong> 22.1</div>
-                            <div><strong>Amount Invested:</strong> $7.07</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$20.22</span></div>
-                            <div class="profit-loss positive"><strong>Unrealized P/L:</strong> <span class="pnl-amount">+$13.15</span> <span class="pnl-percent">(+185.94%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Will Trump meet with Xi Jinping in March 2026?",
-                          "description": "Prediction market: Yes 22% · No 79% on Polymarket.",
-                          "url": "https://polymarket.com/event/who-will-trump-meet-with-in-march",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-will-trump-meet-with-xi-jinping-in-march-2026-241" aria-label="Polymarket prediction market: Will Trump meet with Xi Jinping in March 2026?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Will Trump meet with Xi Jinping in March 2026? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=will-trump-meet-with-xi-jinping-in-march-2026-241&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/who-will-trump-meet-with-in-march" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Will Trump meet with Xi Jinping in March 2026?</strong><br>
-                                Yes 22% · No 79%<br>
-                                <a href="https://polymarket.com/event/who-will-trump-meet-with-in-march">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-
-                    <div class="market-card">
-                        <h2>Will Trump say "Khamenei" this week? (March 22)</h2>
-                        <div class="bet-details" data-market="will-trump-say-khamenei-this-week-march-22" data-shares="23.3" data-invested="10.00">
-                            <div><strong>Shares:</strong> 23.3</div>
-                            <div><strong>Amount Invested:</strong> $10.00</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$12.09</span></div>
-                            <div class="profit-loss positive"><strong>Unrealized P/L:</strong> <span class="pnl-amount">+$2.09</span> <span class="pnl-percent">(+20.93%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Will Trump say \"Khamenei\" this week? (March 22)",
-                          "description": "Prediction market: Yes 38% · No 62% on Polymarket.",
-                          "url": "https://polymarket.com/event/what-will-trump-say-this-week-march-22",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-will-trump-say-khamenei-this-week-march-22" aria-label="Polymarket prediction market: Will Trump say &quot;Khamenei&quot; this week? (March 22)" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Will Trump say &quot;Khamenei&quot; this week? (March 22) — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=will-trump-say-khamenei-this-week-march-22&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/what-will-trump-say-this-week-march-22" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Will Trump say &quot;Khamenei&quot; this week? (March 22)</strong><br>
-                                Yes 38% · No 62%<br>
-                                <a href="https://polymarket.com/event/what-will-trump-say-this-week-march-22">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Iran Category -->
-        <div class="category">
-            <div class="category-header" onclick="toggleCategory('iran')">
-                <h2>Iran</h2>
-                <span class="arrow">▶</span>
-            </div>
-            <div id="iran" class="category-content">
-                <div class="grid">
-                    <div class="market-card">
-                        <h2>Naim Qassem out as Hezbollah’s secretary-general by March 31, 2026?</h2>
-                        <div class="bet-details" data-market="naim-qassem-out-as-hezbollahs-secretary-general-by-march-31" data-shares="34.0" data-invested="10.00">
-                            <div><strong>Shares:</strong> 34.0</div>
-                            <div><strong>Amount Invested:</strong> $10.00</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$9.35</span></div>
-                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.65</span> <span class="pnl-percent">(-6.47%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Naim Qassem out as Hezbollah’s secretary-general by March 31, 2026?",
-                          "description": "Prediction market: Yes 27% · No 73% on Polymarket.",
-                          "url": "https://polymarket.com/event/naim-qassem-out-as-hezbollahs-secretary-general-by-december-31",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-naim-qassem-out-as-hezbollahs-secretary-general-by-march-31-2026" aria-label="Polymarket prediction market: Naim Qassem out as Hezbollah’s secretary-general by March 31, 2026?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Naim Qassem out as Hezbollah’s secretary-general by March 31, 2026? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=naim-qassem-out-as-hezbollahs-secretary-general-by-march-31-2026&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/naim-qassem-out-as-hezbollahs-secretary-general-by-december-31" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Naim Qassem out as Hezbollah’s secretary-general by March 31, 2026?</strong><br>
-                                Yes 27% · No 73%<br>
-                                <a href="https://polymarket.com/event/naim-qassem-out-as-hezbollahs-secretary-general-by-december-31">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-
-                    <div class="market-card">
-                        <h2>Iran x Israel/US conflict ends by April 15?</h2>
-                        <div class="bet-details" data-market="iran-x-israelus-conflict-ends-by-april-15" data-shares="30.3" data-invested="10.00">
-                            <div><strong>Shares:</strong> 30.3</div>
-                            <div><strong>Amount Invested:</strong> $10.00</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$8.48</span></div>
-                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$1.52</span> <span class="pnl-percent">(-15.15%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Iran x Israel/US conflict ends by April 15?",
-                          "description": "Prediction market: Yes 31% · No 70% on Polymarket.",
-                          "url": "https://polymarket.com/event/iran-x-israelus-conflict-ends-by",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-iran-x-israelus-conflict-ends-by-april-15-618" aria-label="Polymarket prediction market: Iran x Israel/US conflict ends by April 15?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Iran x Israel/US conflict ends by April 15? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=iran-x-israelus-conflict-ends-by-april-15-618&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/iran-x-israelus-conflict-ends-by" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Iran x Israel/US conflict ends by April 15?</strong><br>
-                                Yes 31% · No 70%<br>
-                                <a href="https://polymarket.com/event/iran-x-israelus-conflict-ends-by">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-
-                    <div class="market-card">
-                        <h2>Iran leadership change by March 31?</h2>
-                        <div class="bet-details" data-market="iran-leadership-change-by-march-31" data-shares="58.8" data-invested="10.00">
-                            <div><strong>Shares:</strong> 58.8</div>
-                            <div><strong>Amount Invested:</strong> $10.00</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$7.94</span></div>
-                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$2.06</span> <span class="pnl-percent">(-20.59%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Iran leadership change by March 31?",
-                          "description": "Prediction market: Yes 16% · No 85% on Polymarket.",
-                          "url": "https://polymarket.com/event/iran-leadership-change-by",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-iran-leadership-change-by-march-31" aria-label="Polymarket prediction market: Iran leadership change by March 31?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Iran leadership change by March 31? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=iran-leadership-change-by-march-31&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/iran-leadership-change-by" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Iran leadership change by March 31?</strong><br>
-                                Yes 16% · No 85%<br>
-                                <a href="https://polymarket.com/event/iran-leadership-change-by">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-
-                    <div class="market-card">
-                        <h2>Strait of Hormuz traffic returns to normal by end of April?</h2>
-                        <div class="bet-details" data-market="strait-of-hormuz-traffic-returns-to-normal-by-april-30" data-shares="27.1" data-invested="8.66">
-                            <div><strong>Shares:</strong> 27.1</div>
-                            <div><strong>Amount Invested:</strong> $8.66</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$8.66</span></div>
-                            <div class="profit-loss neutral"><strong>Unrealized P/L:</strong> <span class="pnl-amount">$0.00</span> <span class="pnl-percent">(0%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Strait of Hormuz traffic returns to normal by end of April?",
-                          "description": "Prediction market: Yes 31% · No 69% on Polymarket.",
-                          "url": "https://polymarket.com/event/strait-of-hormuz-traffic-returns-to-normal-by-april-30",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-strait-of-hormuz-traffic-returns-to-normal-by-april-30" aria-label="Polymarket prediction market: Strait of Hormuz traffic returns to normal by end of April?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Strait of Hormuz traffic returns to normal by end of April? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=strait-of-hormuz-traffic-returns-to-normal-by-april-30&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/strait-of-hormuz-traffic-returns-to-normal-by-april-30" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Strait of Hormuz traffic returns to normal by end of April?</strong><br>
-                                Yes 31% · No 69%<br>
-                                <a href="https://polymarket.com/event/strait-of-hormuz-traffic-returns-to-normal-by-april-30">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-
-                    <div class="market-card">
-                        <h2>Iran leadership change by April 30?</h2>
-                        <div class="bet-details" data-market="iran-leadership-change-by-april-30" data-shares="19.3" data-invested="8.32">
-                            <div><strong>Shares:</strong> 19.3</div>
-                            <div><strong>Amount Invested:</strong> $8.32</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$7.64</span></div>
-                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.68</span> <span class="pnl-percent">(-8.14%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Iran leadership change by April 30?",
-                          "description": "Prediction market: Yes 40% · No 61% on Polymarket.",
-                          "url": "https://polymarket.com/event/iran-leadership-change-by",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-iran-leadership-change-by-april-30" aria-label="Polymarket prediction market: Iran leadership change by April 30?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Iran leadership change by April 30? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=iran-leadership-change-by-april-30&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/iran-leadership-change-by" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Iran leadership change by April 30?</strong><br>
-                                Yes 40% · No 61%<br>
-                                <a href="https://polymarket.com/event/iran-leadership-change-by">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-
-                    <div class="market-card">
-                        <h2>Iran coup attempt by June 30?</h2>
-                        <div class="bet-details" data-market="iran-coup-attempt-by-june-30" data-shares="21.7" data-invested="5.00">
-                            <div><strong>Shares:</strong> 21.7</div>
-                            <div><strong>Amount Invested:</strong> $5.00</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$4.78</span></div>
-                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.22</span> <span class="pnl-percent">(-4.35%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Iran coup attempt by June 30?",
-                          "description": "Prediction market: Yes 22% · No 78% on Polymarket.",
-                          "url": "https://polymarket.com/event/iran-coup-attempt-by-june-30",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-iran-coup-attempt-by-june-30" aria-label="Polymarket prediction market: Iran coup attempt by June 30?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Iran coup attempt by June 30? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=iran-coup-attempt-by-june-30&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/iran-coup-attempt-by-june-30" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Iran coup attempt by June 30?</strong><br>
-                                Yes 22% · No 78%<br>
-                                <a href="https://polymarket.com/event/iran-coup-attempt-by-june-30">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-
-                    <div class="market-card">
-                        <h2>Iran leadership change by March 13?</h2>
-                        <div class="bet-details" data-market="iran-leadership-change-by-march-13" data-shares="500.0" data-invested="1.00">
-                            <div><strong>Shares:</strong> 500.0</div>
-                            <div><strong>Amount Invested:</strong> $1.00</div>
-                            <div><strong>Current Value:</strong> <span class="current-value">$0.25</span></div>
-                            <div class="profit-loss negative"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-$0.75</span> <span class="pnl-percent">(-75%)</span></div>
-                        </div>
-                        <script type="application/ld+json">
-                        {
-                          "@context": "https://schema.org",
-                          "@type": "WebPage",
-                          "name": "Iran leadership change by March 13?",
-                          "description": "Prediction market: Yes 0% · No 100% on Polymarket.",
-                          "url": "https://polymarket.com/event/iran-leadership-change-by",
-                          "publisher": {
-                            "@type": "Organization",
-                            "name": "Polymarket",
-                            "url": "https://polymarket.com"
-                          }
-                        }
-                        </script>
-                        <figure class="polymarket-embed" id="polymarket-iran-leadership-change-by-march-13" aria-label="Polymarket prediction market: Iran leadership change by March 13?" itemscope itemtype="https://schema.org/WebPage" style="position:relative;display:inline-block;margin:0">
-                            <iframe title="Iran leadership change by March 13? — Polymarket Prediction Market" src="https://embed.polymarket.com/market?market=iran-leadership-change-by-march-13&theme=dark&creator=EthanB123&height=300" width="400" height="300" frameborder="0" allowtransparency="true"></iframe>
-                            <a href="https://polymarket.com/event/iran-leadership-change-by" aria-label="View on Polymarket" target="_blank" rel="noopener" style="position:absolute;top:16px;right:20px;width:120px;height:24px;z-index:10"></a>
-                            <figcaption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
-                                <strong>Iran leadership change by March 13?</strong><br>
-                                Yes 0% · No 100%<br>
-                                <a href="https://polymarket.com/event/iran-leadership-change-by">View full market &amp; trade on Polymarket</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-                </div>
-            </div>
+        <div id="dashboard-content">
+            <!-- Dynamic Content Injected Here -->
         </div>
     </div>
 
     <script>
-        // Password protection
-        const loginForm = document.getElementById('login-form');
-        const loginDiv = document.getElementById('login');
-        const dashboard = document.getElementById('dashboard');
-        const passwordInput = document.getElementById('password');
+        // --- CONFIGURATION DATA ---
+        const portfolioConfig = [
+            {
+                category: "Cuba",
+                markets: [
+                    {
+                        title: "Cuban Regime Falls in 2026?",
+                        slug: "cuban-regime-falls-in-2026",
+                        link: "https://polymarket.com/event/cuban-regime-falls-in-2026",
+                        shares: 163.0,
+                        invested: 55.42
+                    }
+                ]
+            },
+            {
+                category: "Trump",
+                markets: [
+                    {
+                        title: "Will Trump meet with Xi Jinping in March 2026?",
+                        slug: "will-trump-meet-with-xi-jinping-in-march-2026-241",
+                        link: "https://polymarket.com/event/who-will-trump-meet-with-in-march",
+                        shares: 22.1,
+                        invested: 7.07
+                    },
+                    {
+                        title: 'Will Trump say "Khamenei" this week? (March 22)',
+                        slug: "will-trump-say-khamenei-this-week-march-22",
+                        link: "https://polymarket.com/event/what-will-trump-say-this-week-march-22",
+                        shares: 23.3,
+                        invested: 10.00
+                    }
+                ]
+            },
+            {
+                category: "Iran",
+                markets: [
+                    {
+                        title: "Naim Qassem out as Hezbollah’s secretary-general by March 31, 2026?",
+                        slug: "naim-qassem-out-as-hezbollahs-secretary-general-by-march-31-2026",
+                        link: "https://polymarket.com/event/naim-qassem-out-as-hezbollahs-secretary-general-by-december-31",
+                        shares: 34.0,
+                        invested: 10.00
+                    },
+                    {
+                        title: "Iran x Israel/US conflict ends by April 15?",
+                        slug: "iran-x-israelus-conflict-ends-by-april-15-618",
+                        link: "https://polymarket.com/event/iran-x-israelus-conflict-ends-by",
+                        shares: 30.3,
+                        invested: 10.00
+                    },
+                    {
+                        title: "Iran leadership change by March 31?",
+                        slug: "iran-leadership-change-by-march-31",
+                        link: "https://polymarket.com/event/iran-leadership-change-by",
+                        shares: 58.8,
+                        invested: 10.00
+                    },
+                    {
+                        title: "Strait of Hormuz traffic returns to normal by end of April?",
+                        slug: "strait-of-hormuz-traffic-returns-to-normal-by-april-30",
+                        link: "https://polymarket.com/event/strait-of-hormuz-traffic-returns-to-normal-by-april-30",
+                        shares: 27.1,
+                        invested: 8.66
+                    },
+                    {
+                        title: "Iran leadership change by April 30?",
+                        slug: "iran-leadership-change-by-april-30",
+                        link: "https://polymarket.com/event/iran-leadership-change-by",
+                        shares: 19.3,
+                        invested: 8.32
+                    },
+                    {
+                        title: "Iran coup attempt by June 30?",
+                        slug: "iran-coup-attempt-by-june-30",
+                        link: "https://polymarket.com/event/iran-coup-attempt-by-june-30",
+                        shares: 21.7,
+                        invested: 5.00
+                    },
+                    {
+                        title: "Iran leadership change by March 13?",
+                        slug: "iran-leadership-change-by-march-13",
+                        link: "https://polymarket.com/event/iran-leadership-change-by",
+                        shares: 500.0,
+                        invested: 1.00
+                    }
+                ]
+            }
+        ];
 
-        // Set your password here
-        const correctPassword = 'IWonULoseBro7'; // Change this to your desired password
+        // Global state for live data
+        let marketDataStore = {};
+        const REFRESH_INTERVAL_SECONDS = 15;
+        let countdown = REFRESH_INTERVAL_SECONDS;
 
-        loginForm.addEventListener('submit', (e) => {
+        // --- RENDER FUNCTIONS ---
+        function renderDashboard() {
+            const container = document.getElementById('dashboard-content');
+            container.innerHTML = '';
+            
+            // Build fixed portfolio categories
+            portfolioConfig.forEach(cat => {
+                container.appendChild(buildCategoryHtml(cat.category, cat.markets, true));
+            });
+
+            // Placeholder for Trending section (rendered after fetch)
+            const trendingDiv = document.createElement('div');
+            trendingDiv.id = 'trending-geopolitics-container';
+            container.appendChild(trendingDiv);
+
+            fetchTrendingGeopolitics();
+        }
+
+        function buildCategoryHtml(categoryName, markets, isInvestment = true) {
+            const catDiv = document.createElement('div');
+            catDiv.className = 'category';
+            
+            const header = document.createElement('div');
+            header.className = 'category-header';
+            header.onclick = () => toggleCategory(categoryName.replace(/\s/g, ''));
+            header.innerHTML = `<h2>${categoryName}</h2><span class="arrow expanded">▼</span>`;
+            
+            const content = document.createElement('div');
+            content.id = categoryName.replace(/\s/g, '');
+            content.className = 'category-content expanded';
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+
+            markets.forEach(market => {
+                marketDataStore[market.slug] = market; // Save to store for live update lookups
+
+                const card = document.createElement('div');
+                card.className = 'market-card';
+                card.id = `card-${market.slug}`;
+                
+                let detailsHtml = '';
+                if (isInvestment) {
+                    detailsHtml = `
+                        <div class="bet-details" data-market="${market.slug}" data-shares="${market.shares}" data-invested="${market.invested}">
+                            <div><strong>Shares:</strong> ${market.shares.toFixed(1)}</div>
+                            <div><strong>Amount Invested:</strong> $${market.invested.toFixed(2)}</div>
+                            <div><strong>Current Value:</strong> <span class="current-value">Loading...</span></div>
+                            <div class="profit-loss neutral"><strong>Unrealized P/L:</strong> <span class="pnl-amount">-</span> <span class="pnl-percent"></span></div>
+                        </div>
+                    `;
+                } else {
+                    // Trending market view
+                    detailsHtml = `
+                        <div class="bet-details" data-market="${market.slug}">
+                            <div style="justify-content:center; margin-top:10px;">
+                                <a href="${market.link}" target="_blank" style="color: #2196F3; text-decoration: none; font-weight: bold; border: 1px solid #2196F3; padding: 5px 10px; border-radius: 4px;">View on Polymarket</a>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <h2>${market.title}</h2>
+                    ${detailsHtml}
+                    <div style="position:relative; margin-top:15px; text-align:center;">
+                        <iframe title="${market.title}" src="https://embed.polymarket.com/market?market=${market.slug}&theme=dark&creator=EthanB123&height=300" width="100%" height="300" frameborder="0" allowtransparency="true" style="border-radius: 8px;"></iframe>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            content.appendChild(grid);
+            catDiv.appendChild(header);
+            catDiv.appendChild(content);
+            return catDiv;
+        }
+
+        // --- DYNAMIC GEOPOLITICS FETCH ---
+        async function fetchTrendingGeopolitics() {
+            try {
+                // Fetch active events from Polymarket. Gamma API limits results so we pull top 50 to find geo.
+                const res = await fetch('https://gamma-api.polymarket.com/events?limit=50&active=true&closed=false');
+                const data = await res.json();
+                
+                const trendingMarkets = [];
+                for (const event of data) {
+                    // check tags for geopolitics, middle east, politics
+                    const tags = (event.tags || []).map(t => typeof t === 'object' ? t.id.toLowerCase() : t.toLowerCase());
+                    const slugText = (event.slug || "").toLowerCase();
+                    const titleText = (event.title || "").toLowerCase();
+                    
+                    const isGeo = tags.includes('geopolitics') || tags.includes('middle east') 
+                                || tags.includes('global politics') || tags.includes('politics')
+                                || slugText.includes('geopolitics') || titleText.includes('war') || titleText.includes('election');
+
+                    if (isGeo && event.markets && event.markets.length > 0) {
+                        const mainMarket = event.markets[0]; // Take the main condition
+                        
+                        // Avoid duplicates if we already hold it
+                        if (!Object.keys(marketDataStore).includes(mainMarket.slug)) {
+                            trendingMarkets.push({
+                                title: event.title,
+                                slug: mainMarket.slug,
+                                link: `https://polymarket.com/event/${event.slug}`,
+                            });
+                        }
+                    }
+                    if (trendingMarkets.length >= 4) break; // Display top 4 trending
+                }
+
+                if (trendingMarkets.length > 0) {
+                    const container = document.getElementById('trending-geopolitics-container');
+                    container.innerHTML = '';
+                    container.appendChild(buildCategoryHtml("Trending Geopolitics (Ideas)", trendingMarkets, false));
+                }
+
+            } catch (err) {
+                console.error("Geopolitics fetch error", err);
+            }
+        }
+
+        // --- PASSWORD & UI ---
+        const correctPassword = 'IWonULoseBro7';
+        document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            if (passwordInput.value === correctPassword) {
-                loginDiv.classList.add('hidden');
-                dashboard.classList.remove('hidden');
+            if (document.getElementById('password').value === correctPassword) {
+                document.getElementById('login').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                renderDashboard();
+                updateLivePrices();
+                startTimer();
             } else {
-                alert('Incorrect password. Please try again.');
-                passwordInput.value = '';
+                alert('Incorrect password.');
+                document.getElementById('password').value = '';
             }
         });
 
-        // Category toggling
         function toggleCategory(categoryId) {
             const content = document.getElementById(categoryId);
             const arrow = content.previousElementSibling.querySelector('.arrow');
             content.classList.toggle('expanded');
-            arrow.classList.toggle('expanded');
+            
+            if (content.classList.contains('expanded')) {
+                arrow.style.transform = 'rotate(0deg)';
+                arrow.innerHTML = '▼';
+            } else {
+                arrow.style.transform = 'rotate(-90deg)';
+                arrow.innerHTML = '◀';
+            }
         }
 
-        // Theme toggle
-        const toggle = document.getElementById('theme-toggle');
         const body = document.body;
+        const toggle = document.getElementById('theme-toggle');
         const modeText = document.getElementById('mode-text');
-
         toggle.addEventListener('click', () => {
             body.classList.toggle('light-mode');
             toggle.classList.toggle('dark');
             modeText.textContent = body.classList.contains('light-mode') ? 'Light Mode' : 'Dark Mode';
         });
 
-        // Live Price Updates & P&L Calculation
+        // --- LIVE PRICING & TIMERS ---
+        function startTimer() {
+            setInterval(() => {
+                countdown--;
+                if (countdown < 0) {
+                    countdown = REFRESH_INTERVAL_SECONDS;
+                    updateLivePrices();
+                }
+                document.getElementById('refresh-timer').textContent = countdown;
+            }, 1000);
+        }
+
         async function updateLivePrices() {
-            const betDetails = document.querySelectorAll('.bet-details');
-            
+            const betDetails = document.querySelectorAll('.bet-details[data-invested]');
+            let totalInvested = 0;
+            let totalValue = 0;
+
+            // Optional: batch queries. For simplicity we will query each, or use a large graphql filter.
             for (const detail of betDetails) {
                 const marketId = detail.getAttribute('data-market');
                 const shares = parseFloat(detail.getAttribute('data-shares'));
                 const invested = parseFloat(detail.getAttribute('data-invested'));
                 
                 if (!marketId || !shares || !invested) continue;
+                totalInvested += invested;
 
                 try {
-                    // Try Polymarket's public GraphQL API
                     const query = `
                     query {
                         markets(where: { slug: "${marketId}" }) {
                             lastPrice
-                            lastTradeTime
                         }
-                    }
-                    `;
+                    }`;
                     
                     const response = await fetch('https://api.polymarket.com/graphql', {
                         method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                         body: JSON.stringify({ query }),
                         mode: 'cors'
-                    }).catch(() => null);
+                    });
 
-                    if (response && response.ok) {
+                    if (response.ok) {
                         const data = await response.json();
-                        // Handle GraphQL response
-                        if (data.data && data.data.markets && data.data.markets[0]) {
+                        if (data.data?.markets?.[0]) {
                             const market = data.data.markets[0];
-                            const currentPrice = market.lastPrice || market.price;
+                            const currentPrice = market.lastPrice;
                             
                             if (currentPrice !== undefined && currentPrice !== null) {
-                                updatePnL(detail, currentPrice, shares, invested);
+                                const marketValue = updatePnL(detail, currentPrice, shares, invested);
+                                if (marketValue !== null) totalValue += marketValue;
+                            } else {
+                                totalValue += invested; // Fallback so total isn't wildly skewed
                             }
+                        } else {
+                            totalValue += invested;
                         }
+                    } else {
+                        totalValue += invested;
                     }
                 } catch (error) {
-                    console.log(`Could not fetch live price for ${marketId}`);
+                    console.error(`Fetch error for ${marketId}`, error);
+                    totalValue += invested;
                 }
             }
+            
+            updateTotalSummary(totalInvested, totalValue);
         }
 
         function updatePnL(detail, currentPrice, shares, invested) {
-            // Calculate new values
-            const currentValue = (shares * currentPrice).toFixed(2);
-            const pnlAmount = (parseFloat(currentValue) - invested).toFixed(2);
-            const pnlPercent = invested > 0 ? ((pnlAmount / invested) * 100).toFixed(2) : 0;
+            const currentValue = shares * currentPrice;
+            const pnlAmount = currentValue - invested;
+            const pnlPercent = invested > 0 ? (pnlAmount / invested) * 100 : 0;
 
-            // Update current value display
             const currentValueSpan = detail.querySelector('.current-value');
             if (currentValueSpan) {
-                currentValueSpan.textContent = `$${currentValue}`;
+                currentValueSpan.textContent = `$${currentValue.toFixed(2)}`;
             }
 
-            // Update P&L amount and percent
             const pnlAmountSpan = detail.querySelector('.pnl-amount');
             const pnlPercentSpan = detail.querySelector('.pnl-percent');
             const profitLossDiv = detail.querySelector('.profit-loss');
 
             if (pnlAmountSpan) {
                 const sign = pnlAmount >= 0 ? '+' : '';
-                pnlAmountSpan.textContent = `${sign}$${pnlAmount}`;
+                pnlAmountSpan.textContent = `${sign}$${pnlAmount.toFixed(2)}`;
             }
 
             if (pnlPercentSpan) {
                 const sign = pnlPercent >= 0 ? '+' : '';
-                pnlPercentSpan.textContent = `(${sign}${pnlPercent}%)`;
+                pnlPercentSpan.textContent = `(${sign}${pnlPercent.toFixed(2)}%)`;
             }
 
-            // Update color coding based on P&L
             if (profitLossDiv) {
                 profitLossDiv.classList.remove('positive', 'negative', 'neutral');
-                if (parseFloat(pnlAmount) > 0) {
+                if (pnlAmount > 0.01) {
                     profitLossDiv.classList.add('positive');
-                } else if (parseFloat(pnlAmount) < 0) {
+                } else if (pnlAmount < -0.01) {
                     profitLossDiv.classList.add('negative');
                 } else {
                     profitLossDiv.classList.add('neutral');
                 }
             }
+            return currentValue;
         }
-
-        // Update prices every 15 seconds for live tracking
-        setInterval(updateLivePrices, 15000);
         
-        // Also try once on page load (after dashboard is visible)
-        window.addEventListener('load', () => {
-            setTimeout(updateLivePrices, 500);
-        });
+        function updateTotalSummary(invested, value) {
+            const pnl = value - invested;
+            const pnlPercent = invested > 0 ? (pnl / invested) * 100 : 0;
+            
+            document.getElementById('tot-invested').textContent = `$${invested.toFixed(2)}`;
+            document.getElementById('tot-value').textContent = `$${value.toFixed(2)}`;
+            
+            const pnlSpan = document.getElementById('tot-pnl');
+            const sign = pnl >= 0 ? '+' : '';
+            pnlSpan.textContent = `${sign}$${pnl.toFixed(2)} (${sign}${pnlPercent.toFixed(2)}%)`;
+            
+            pnlSpan.className = '';
+            if (pnl > 0.01) {
+                pnlSpan.classList.add('pnl-positive');
+            } else if (pnl < -0.01) {
+                pnlSpan.classList.add('pnl-negative');
+            } else {
+                pnlSpan.classList.add('pnl-neutral');
+            }
+        }
     </script>
 </body>
 </html>
