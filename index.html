@@ -355,7 +355,7 @@ function renderGrid(root) {
             cell.innerHTML = `
                 <div class="card-head">
                     <div class="card-stats">
-                        Shares: <span>${m.shares.toFixed(1)}</span> · Inv: <span>$${m.invested.toFixed(2)}</span> · Val: <span class="current-value" style="color:var(--muted)">--</span>
+                        Shares: <span>${m.shares.toFixed(1)}</span> · Inv: <span>$${m.invested.toFixed(2)}</span> · Current Value: <span class="current-value" style="color:var(--muted)">--</span> · <span class="card-pnl" style="font-weight:600">--</span>
                     </div>
                     <a href="${m.link}" class="m-link" target="_blank">↗ Polymarket</a>
                 </div>
@@ -657,6 +657,12 @@ function applyPnl(row, price, shares, invested) {
     if (card) {
         const cv2 = card.querySelector('.card-head .current-value');
         if (cv2) { cv2.textContent = '$'+val.toFixed(2); cv2.style.color = pnl>.01?'var(--pos)':pnl<-.01?'var(--neg)':'inherit'; }
+        const cp = card.querySelector('.card-head .card-pnl');
+        if (cp) {
+            const pnlLabel = pnl >= 0 ? 'Profit' : 'Loss';
+            cp.textContent = pnlLabel + ': ' + (pnl>=0?'+':'') + '$' + Math.abs(pnl).toFixed(2);
+            cp.style.color = pnl>.01?'var(--pos)':pnl<-.01?'var(--neg)':'var(--muted)';
+        }
     }
     return val;
 }
