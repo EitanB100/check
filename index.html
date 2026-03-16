@@ -7,123 +7,112 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0b0f19;
-            --text: #e2e8f0;
-            --card: #151b2b;
-            --card-exp: #1a2235;
-            --border: #1f2937;
-            --primary: #3b82f6;
-            --primary-h: #2563eb;
-            --pos: #10b981;
-            --pos-bg: rgba(16,185,129,.1);
-            --neg: #ef4444;
-            --neg-bg: rgba(239,68,68,.1);
-            --muted: #94a3b8;
-            --muted-bg: rgba(148,163,184,.1);
+            --bg:#0b0f19;--text:#e2e8f0;--card:#151b2b;--card-exp:#1a2235;--border:#1f2937;
+            --primary:#3b82f6;--primary-h:#2563eb;
+            --pos:#10b981;--pos-bg:rgba(16,185,129,.1);
+            --neg:#ef4444;--neg-bg:rgba(239,68,68,.1);
+            --muted:#94a3b8;--muted-bg:rgba(148,163,184,.1);
         }
         .light-mode {
-            --bg: #f8fafc; --text: #0f172a; --card: #fff; --card-exp: #f1f5f9;
-            --border: #e2e8f0; --primary: #2563eb; --primary-h: #1d4ed8;
-            --pos: #16a34a; --pos-bg: rgba(22,163,74,.1);
-            --neg: #dc2626; --neg-bg: rgba(220,38,38,.1);
-            --muted: #64748b; --muted-bg: rgba(100,116,139,.1);
+            --bg:#f8fafc;--text:#0f172a;--card:#fff;--card-exp:#f1f5f9;--border:#e2e8f0;
+            --primary:#2563eb;--primary-h:#1d4ed8;
+            --pos:#16a34a;--pos-bg:rgba(22,163,74,.1);
+            --neg:#dc2626;--neg-bg:rgba(220,38,38,.1);
+            --muted:#64748b;--muted-bg:rgba(100,116,139,.1);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); padding:24px; transition:background .3s,color .3s; }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding:24px;transition:background .3s,color .3s}
 
-        /* ── Header ─────────────────────────────── */
-        header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px; }
-        .hdr-left h1 { font-size:1.6rem; font-weight:700; letter-spacing:-.02em; }
-        .timer-row { font-size:.82rem; color:var(--muted); margin-top:6px; display:flex; align-items:center; gap:10px; }
-        .pulse { width:8px;height:8px;background:var(--primary);border-radius:50%;animation:pulse 2s infinite; }
+        /* Header */
+        header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
+        .hdr-left h1{font-size:1.6rem;font-weight:700;letter-spacing:-.02em}
+        .timer-row{font-size:.82rem;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:10px}
+        .pulse{width:8px;height:8px;background:var(--primary);border-radius:50%;animation:pulse 2s infinite}
         @keyframes pulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(59,130,246,.7)}70%{transform:scale(1);box-shadow:0 0 0 6px rgba(59,130,246,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(59,130,246,0)}}
-        .btn-sm { background:transparent; border:1px solid var(--border); color:var(--text); padding:4px 12px; border-radius:6px; font-size:.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .2s; font-family:inherit; }
-        .btn-sm:hover { background:var(--border); }
-        .btn-sm.spinning svg { animation:spin 1s linear infinite; }
+        .btn-sm{background:transparent;border:1px solid var(--border);color:var(--text);padding:4px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .2s;font-family:inherit}
+        .btn-sm:hover{background:var(--border)}
+        .btn-sm.spinning svg{animation:spin 1s linear infinite}
         @keyframes spin{100%{transform:rotate(360deg)}}
-        .hdr-right { display:flex; align-items:center; gap:14px; }
-        .toggle { width:44px;height:24px;background:var(--border);border-radius:24px;position:relative;cursor:pointer;transition:background .3s; }
-        .toggle.dark { background:var(--primary); }
-        .toggle-dot { position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:transform .3s; }
-        .toggle.dark .toggle-dot { transform:translateX(20px); }
+        .hdr-right{display:flex;align-items:center;gap:14px}
+        .toggle{width:44px;height:24px;background:var(--border);border-radius:24px;position:relative;cursor:pointer;transition:background .3s}
+        .toggle.dark{background:var(--primary)}
+        .toggle-dot{position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:transform .3s}
+        .toggle.dark .toggle-dot{transform:translateX(20px)}
 
-        /* ── Summary ────────────────────────────── */
-        .summary { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; margin-bottom:28px; display:flex; justify-content:space-around; flex-wrap:wrap; gap:12px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
-        .s-stat { text-align:center; padding:6px 14px; }
-        .s-label { font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:600; margin-bottom:6px; }
-        .s-value { font-size:1.8rem; font-weight:700; letter-spacing:-.02em; }
+        /* Summary */
+        .summary{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:28px;display:flex;justify-content:space-around;flex-wrap:wrap;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+        .s-stat{text-align:center;padding:6px 14px}
+        .s-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:6px}
+        .s-value{font-size:1.8rem;font-weight:700;letter-spacing:-.02em}
 
-        /* ── View toggle ────────────────────────── */
-        .view-bar { display:flex; justify-content:flex-end; margin-bottom:16px; gap:8px; }
-        .view-bar .btn-sm.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+        /* View toggle */
+        .view-bar{display:flex;justify-content:flex-end;margin-bottom:16px;gap:8px}
+        .view-bar .btn-sm.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 
-        /* ── Category ───────────────────────────── */
-        .category { margin-bottom:28px; }
-        .cat-hdr { cursor:pointer; display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:6px 10px; border-radius:8px; transition:background .2s; }
-        .cat-hdr:hover { background:rgba(255,255,255,.05); }
-        .light-mode .cat-hdr:hover { background:rgba(0,0,0,.04); }
-        .cat-hdr h2 { font-size:1.15rem; font-weight:600; }
-        .arrow { transition:transform .3s; font-size:.8rem; color:var(--muted); }
-        .cat-body { display:flex; flex-direction:column; gap:14px; }
-        .cat-body.collapsed { display:none; }
+        /* Category */
+        .category{margin-bottom:28px}
+        .cat-hdr{cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:6px 10px;border-radius:8px;transition:background .2s}
+        .cat-hdr:hover{background:rgba(255,255,255,.05)}
+        .light-mode .cat-hdr:hover{background:rgba(0,0,0,.04)}
+        .cat-hdr h2{font-size:1.15rem;font-weight:600}
+        .arrow{transition:transform .3s;font-size:.8rem;color:var(--muted)}
+        .cat-body{display:flex;flex-direction:column;gap:14px}
+        .cat-body.collapsed{display:none}
 
-        /* ── List‑view market card ──────────────── */
-        .m-wrap { background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; transition:all .2s; box-shadow:0 1px 3px rgba(0,0,0,.06); }
-        .m-wrap:hover { border-color:var(--primary); }
-        .m-row { padding:16px 20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
-        .m-info { flex:1; padding-right:20px; }
-        .m-title { font-size:.98rem; font-weight:600; margin:0 0 6px; line-height:1.35; }
-        .m-link { font-size:.75rem; color:var(--primary); text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:500; padding:3px 7px; border-radius:4px; background:rgba(59,130,246,.1); transition:background .2s; }
-        .m-link:hover { background:rgba(59,130,246,.2); }
-        .m-stats { display:flex; gap:24px; align-items:center; }
-        .sg { display:flex; flex-direction:column; gap:3px; min-width:75px; }
-        .sg-l { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:600; }
-        .sg-v { font-size:.92rem; font-weight:600; }
-        .pnl-box { padding:5px 10px; border-radius:7px; font-weight:600; font-size:.85rem; display:flex; flex-direction:column; align-items:flex-end; min-width:90px; }
-        .pnl-amt { font-size:1rem; }
-        .pnl-pct { font-size:.7rem; opacity:.9; }
-        .positive { background:var(--pos-bg); color:var(--pos); }
-        .negative { background:var(--neg-bg); color:var(--neg); }
-        .neutral  { background:var(--muted-bg); color:var(--muted); }
-        .exp-icon { margin-left:16px; color:var(--muted); transition:transform .3s; }
-        .m-wrap.expanded .exp-icon { transform:rotate(180deg); }
-        .m-expand { background:var(--card-exp); border-top:1px solid var(--border); max-height:0; overflow:hidden; transition:max-height .4s ease-out,padding .4s ease; display:flex; justify-content:center; }
-        .m-wrap.expanded .m-expand { max-height:360px; padding:16px; }
-        .m-expand iframe { border-radius:8px; max-width:580px; width:100%; }
+        /* List view market row */
+        .m-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+        .m-wrap:hover{border-color:var(--primary)}
+        .m-row{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+        .m-info{flex:1;padding-right:20px}
+        .m-title{font-size:.98rem;font-weight:600;margin:0 0 6px;line-height:1.35}
+        .m-link{font-size:.75rem;color:var(--primary);text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-weight:500;padding:3px 7px;border-radius:4px;background:rgba(59,130,246,.1);transition:background .2s}
+        .m-link:hover{background:rgba(59,130,246,.2)}
+        .m-stats{display:flex;gap:24px;align-items:center}
+        .sg{display:flex;flex-direction:column;gap:3px;min-width:75px}
+        .sg-l{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+        .sg-v{font-size:.92rem;font-weight:600}
+        .pnl-box{padding:5px 10px;border-radius:7px;font-weight:600;font-size:.85rem;display:flex;flex-direction:column;align-items:flex-end;min-width:90px}
+        .pnl-amt{font-size:1rem}
+        .pnl-pct{font-size:.7rem;opacity:.9}
+        .positive{background:var(--pos-bg);color:var(--pos)}
+        .negative{background:var(--neg-bg);color:var(--neg)}
+        .neutral{background:var(--muted-bg);color:var(--muted)}
+        .exp-icon{margin-left:16px;color:var(--muted);transition:transform .3s}
+        .m-wrap.expanded .exp-icon{transform:rotate(180deg)}
+        .m-expand{background:var(--card-exp);border-top:1px solid var(--border);max-height:0;overflow:hidden;transition:max-height .4s ease-out,padding .4s ease;display:flex;justify-content:center}
+        .m-wrap.expanded .m-expand{max-height:360px;padding:16px}
+        .m-expand iframe{border-radius:8px;max-width:580px;width:100%}
 
-        /* ── Grid / Card view ──────────────────── */
-        .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
-        .card-cell { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:all .2s; }
-        .card-cell:hover { border-color:var(--primary); }
-        .card-cell .card-head { padding:14px 16px; }
-        .card-cell .card-head h3 { font-size:.92rem; font-weight:600; margin:0 0 4px; }
-        .card-cell .card-stats { display:flex; gap:16px; font-size:.78rem; color:var(--muted); margin-bottom:6px; }
-        .card-cell .card-stats span { font-weight:600; color:var(--text); }
-        .card-cell iframe { width:100%; border:none; border-top:1px solid var(--border); }
+        /* Card / Grid view — one flat grid, no category rows */
+        .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:28px}
+        .card-cell{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s;display:flex;flex-direction:column}
+        .card-cell:hover{border-color:var(--primary)}
+        .card-cell .card-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+        .card-cell .card-stats{font-size:.75rem;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+        .card-cell .card-stats span{font-weight:600;color:var(--text)}
+        .card-cell iframe{width:100%;border:none;display:block}
 
-        /* ── Login ──────────────────────────────── */
-        #login { position:fixed; inset:0; background:var(--bg); display:flex; justify-content:center; align-items:center; z-index:1000; }
-        #login.hidden { display:none; }
-        #login-card { background:var(--card); padding:36px; border-radius:14px; border:1px solid var(--border); box-shadow:0 16px 40px rgba(0,0,0,.15); text-align:center; width:100%; max-width:380px; }
-        #login-card h2 { margin-bottom:20px; }
-        #login input { width:80%; padding:10px 14px; margin-bottom:16px; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:inherit; font-size:.95rem; }
-        #login button { width:80%; padding:10px 14px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-weight:600; font-size:.95rem; cursor:pointer; transition:background .2s; }
-        #login button:hover { background:var(--primary-h); }
-        .hidden { display:none!important; }
+        /* Login */
+        #login{position:fixed;inset:0;background:var(--bg);display:flex;justify-content:center;align-items:center;z-index:1000}
+        #login.hidden{display:none}
+        #login-card{background:var(--card);padding:36px;border-radius:14px;border:1px solid var(--border);box-shadow:0 16px 40px rgba(0,0,0,.15);text-align:center;width:100%;max-width:380px}
+        #login-card h2{margin-bottom:20px}
+        #login input{width:80%;padding:10px 14px;margin-bottom:16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.95rem}
+        #login button{width:80%;padding:10px 14px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:.95rem;cursor:pointer;transition:background .2s}
+        #login button:hover{background:var(--primary-h)}
+        .hidden{display:none!important}
 
-        /* ── Flash animation ────────────────────── */
-        @keyframes flash { 0%{background:rgba(59,130,246,.15)} 100%{background:transparent} }
-        .updated { animation:flash 1s ease-out; }
+        @keyframes flash{0%{background:rgba(59,130,246,.15)}100%{background:transparent}}
+        .updated{animation:flash 1s ease-out}
 
-        /* ── Trending ───────────────────────────── */
-        .trend-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
-        .trend-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:space-between; transition:all .2s; }
-        .trend-card:hover { border-color:var(--primary); transform:translateY(-2px); }
-        .trend-card h3 { font-size:.88rem; margin:0 0 10px; font-weight:500; line-height:1.35; }
+        /* Trending */
+        .trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+        .trend-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;transition:all .2s}
+        .trend-card:hover{border-color:var(--primary);transform:translateY(-2px)}
+        .trend-card h3{font-size:.88rem;margin:0 0 10px;font-weight:500;line-height:1.35}
     </style>
 </head>
 <body>
-    <!-- Login -->
     <div id="login">
         <div id="login-card">
             <form id="login-form">
@@ -134,7 +123,6 @@
         </div>
     </div>
 
-    <!-- Dashboard -->
     <div id="dashboard" class="hidden">
         <header>
             <div class="hdr-left">
@@ -154,14 +142,12 @@
             </div>
         </header>
 
-        <!-- Summary -->
         <div class="summary">
             <div class="s-stat"><div class="s-label">Total Invested</div><div class="s-value" id="tot-inv">$0.00</div></div>
             <div class="s-stat"><div class="s-label">Current Value</div><div class="s-value" id="tot-val">$0.00</div></div>
-            <div class="s-stat"><div class="s-label">Unrealized P/L</div><div class="s-value neutral" id="tot-pnl">$0.00 <span style="font-size:.9rem;opacity:.8">(0.00%)</span></div></div>
+            <div class="s-stat"><div class="s-label">Unrealized P/L</div><div class="s-value neutral" id="tot-pnl">$0.00 <span style="font-size:.9rem;opacity:.8">(0.00%)</span></div>
         </div>
 
-        <!-- View Toggle -->
         <div class="view-bar">
             <button class="btn-sm active" id="btn-list" onclick="setView('list')">☰ List</button>
             <button class="btn-sm" id="btn-grid" onclick="setView('grid')">▦ Cards</button>
@@ -171,9 +157,33 @@
     </div>
 
 <script>
-// ─── CONFIG ──────────────────────────────────────────────
-const CORS_PROXY = 'https://corsproxy.io/?url=';
+// ─── CORS PROXIES (fallback chain) ───────────────────────
+const PROXIES = [
+    url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+    url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+    url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+];
+let activeProxyIdx = 0;
 
+async function proxyFetch(url) {
+    // Try proxies in order; on failure rotate to next
+    for (let attempt = 0; attempt < PROXIES.length; attempt++) {
+        const idx = (activeProxyIdx + attempt) % PROXIES.length;
+        const proxied = PROXIES[idx](url);
+        try {
+            const res = await fetch(proxied);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            activeProxyIdx = idx; // stick with working proxy
+            return data;
+        } catch(e) {
+            console.warn(`Proxy ${idx} failed for ${url}:`, e.message);
+        }
+    }
+    throw new Error('All proxies failed for ' + url);
+}
+
+// ─── CONFIG ──────────────────────────────────────────────
 const portfolioConfig = [
     {
         category: "Cuba",
@@ -207,61 +217,40 @@ let marketDataStore = {};
 const TICK = 15;
 let countdown = TICK;
 let isFetching = false;
-let currentView = 'list'; // 'list' or 'grid'
-
-// ─── PROXY HELPER ────────────────────────────────────────
-function proxiedUrl(url) {
-    return CORS_PROXY + encodeURIComponent(url);
-}
+let currentView = 'list';
 
 // ─── RENDER ──────────────────────────────────────────────
 function render() {
     const root = document.getElementById('dashboard-content');
     root.innerHTML = '';
-    if (currentView === 'list') renderListView(root);
-    else renderGridView(root);
-
-    // Trending section
-    const trendBox = document.createElement('div');
-    trendBox.id = 'trending-box';
-    root.appendChild(trendBox);
+    marketDataStore = {};
+    if (currentView === 'list') renderList(root);
+    else renderGrid(root);
+    // Trending
+    const tb = document.createElement('div'); tb.id = 'trending-box'; root.appendChild(tb);
     fetchTrending();
 }
 
-// --- LIST VIEW ---
-function renderListView(root) {
+// ── LIST VIEW ────────────────────────────────────────────
+function renderList(root) {
     portfolioConfig.forEach(cat => {
-        const sec = document.createElement('div');
-        sec.className = 'category';
+        const sec = document.createElement('div'); sec.className = 'category';
         const catId = 'cat-' + cat.category.replace(/\s/g,'');
-
-        const hdr = document.createElement('div');
-        hdr.className = 'cat-hdr';
+        const hdr = document.createElement('div'); hdr.className = 'cat-hdr';
         hdr.innerHTML = `<span class="arrow">▼</span><h2>${cat.category}</h2>`;
         hdr.onclick = () => {
-            const body = document.getElementById(catId);
-            body.classList.toggle('collapsed');
-            hdr.querySelector('.arrow').style.transform = body.classList.contains('collapsed') ? 'rotate(-90deg)' : 'rotate(0)';
+            const b = document.getElementById(catId);
+            b.classList.toggle('collapsed');
+            hdr.querySelector('.arrow').style.transform = b.classList.contains('collapsed') ? 'rotate(-90deg)' : 'rotate(0)';
         };
-
-        const body = document.createElement('div');
-        body.id = catId;
-        body.className = 'cat-body';
+        const body = document.createElement('div'); body.id = catId; body.className = 'cat-body';
 
         cat.markets.forEach(m => {
             marketDataStore[m.slug] = m;
-            const wrap = document.createElement('div');
-            wrap.className = 'm-wrap';
-            wrap.id = 'wrap-' + m.slug;
-
-            const row = document.createElement('div');
-            row.className = 'm-row';
-            row.id = 'row-' + m.slug;
-            row.dataset.market = m.slug;
-            row.dataset.shares = m.shares;
-            row.dataset.invested = m.invested;
+            const wrap = document.createElement('div'); wrap.className = 'm-wrap'; wrap.id = 'wrap-'+m.slug;
+            const row = document.createElement('div'); row.className = 'm-row'; row.id = 'row-'+m.slug;
+            row.dataset.market = m.slug; row.dataset.shares = m.shares; row.dataset.invested = m.invested;
             row.onclick = e => { if (!e.target.closest('.m-link')) wrap.classList.toggle('expanded'); };
-
             row.innerHTML = `
                 <div class="m-info">
                     <h3 class="m-title">${m.title}</h3>
@@ -274,69 +263,40 @@ function renderListView(root) {
                     <div class="pnl-box neutral"><span class="pnl-amt">--</span><span class="pnl-pct"></span></div>
                     <div class="exp-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
                 </div>`;
-
-            const exp = document.createElement('div');
-            exp.className = 'm-expand';
-            exp.innerHTML = `<iframe title="${m.title}" src="https://embed.polymarket.com/market?market=${m.slug}&theme=dark&creator=EthanB123&height=280" height="280" frameborder="0"></iframe>`;
-
-            wrap.appendChild(row);
-            wrap.appendChild(exp);
-            body.appendChild(wrap);
+            const exp = document.createElement('div'); exp.className = 'm-expand';
+            exp.innerHTML = `<iframe title="${m.title}" src="https://embed.polymarket.com/market?market=${m.slug}&theme=dark&creator=EthanB123&height=280" height="280" frameborder="0" scrolling="no" style="overflow:hidden"></iframe>`;
+            wrap.appendChild(row); wrap.appendChild(exp); body.appendChild(wrap);
         });
-
-        sec.appendChild(hdr);
-        sec.appendChild(body);
-        root.appendChild(sec);
+        sec.appendChild(hdr); sec.appendChild(body); root.appendChild(sec);
     });
 }
 
-// --- GRID / CARD VIEW ---
-function renderGridView(root) {
+// ── GRID / CARD VIEW — flat grid, no category rows, no duplicate title ──
+function renderGrid(root) {
+    const grid = document.createElement('div'); grid.className = 'card-grid';
+
     portfolioConfig.forEach(cat => {
-        const sec = document.createElement('div');
-        sec.className = 'category';
-
-        const hdr = document.createElement('div');
-        hdr.className = 'cat-hdr';
-        hdr.innerHTML = `<h2>${cat.category}</h2>`;
-
-        const grid = document.createElement('div');
-        grid.className = 'card-grid';
-
         cat.markets.forEach(m => {
             marketDataStore[m.slug] = m;
-            const cell = document.createElement('div');
-            cell.className = 'card-cell';
-            cell.id = 'card-' + m.slug;
-
+            const cell = document.createElement('div'); cell.className = 'card-cell'; cell.id = 'card-'+m.slug;
+            // Only stats bar — NO title (embed already shows it)
             cell.innerHTML = `
                 <div class="card-head">
-                    <h3>${m.title}</h3>
                     <div class="card-stats">
-                        Shares: <span>${m.shares.toFixed(1)}</span> · Invested: <span>$${m.invested.toFixed(2)}</span> ·
-                        Value: <span class="current-value" style="color:var(--muted)">--</span>
+                        Shares: <span>${m.shares.toFixed(1)}</span> · Inv: <span>$${m.invested.toFixed(2)}</span> · Val: <span class="current-value" style="color:var(--muted)">--</span>
                     </div>
-                    <a href="${m.link}" class="m-link" target="_blank" style="margin-top:4px">↗ Polymarket</a>
+                    <a href="${m.link}" class="m-link" target="_blank">↗ Polymarket</a>
                 </div>
-                <iframe title="${m.title}" src="https://embed.polymarket.com/market?market=${m.slug}&theme=dark&creator=EthanB123&height=240" height="240" frameborder="0"></iframe>`;
-
-            // We also need data attributes for price updates
-            const fakeRow = document.createElement('div');
-            fakeRow.className = 'm-row';
-            fakeRow.id = 'row-' + m.slug;
-            fakeRow.dataset.market = m.slug;
-            fakeRow.dataset.shares = m.shares;
-            fakeRow.dataset.invested = m.invested;
+                <iframe title="${m.title}" src="https://embed.polymarket.com/market?market=${m.slug}&theme=dark&creator=EthanB123&height=280" height="280" frameborder="0" scrolling="no" style="overflow:hidden"></iframe>`;
+            // Hidden row for price update logic
+            const fakeRow = document.createElement('div'); fakeRow.className = 'm-row'; fakeRow.id = 'row-'+m.slug;
+            fakeRow.dataset.market = m.slug; fakeRow.dataset.shares = m.shares; fakeRow.dataset.invested = m.invested;
             fakeRow.style.display = 'none';
             cell.appendChild(fakeRow);
-
             grid.appendChild(cell);
         });
-
-        sec.appendChild(hdr);
-        sec.appendChild(grid);
-        root.appendChild(sec);
     });
+    root.appendChild(grid);
 }
 
 function setView(v) {
@@ -347,11 +307,10 @@ function setView(v) {
     updateLivePrices();
 }
 
-// ─── TRENDING GEOPOLITICS ────────────────────────────────
+// ─── TRENDING ────────────────────────────────────────────
 async function fetchTrending() {
     try {
-        const res = await fetch(proxiedUrl('https://gamma-api.polymarket.com/events?limit=50&active=true&closed=false'));
-        const data = await res.json();
+        const data = await proxyFetch('https://gamma-api.polymarket.com/events?limit=50&active=true&closed=false');
         const items = [];
         for (const ev of data) {
             const tags = (ev.tags||[]).map(t => (typeof t==='object'?t.label||t.id:t).toLowerCase());
@@ -361,19 +320,18 @@ async function fetchTrending() {
                        || slug.includes('geopolitics') || title.includes('war') || title.includes('election');
             if (isGeo && ev.markets && ev.markets.length) {
                 const mk = ev.markets[0];
-                if (!marketDataStore[mk.slug]) items.push({ title:ev.title, link:`https://polymarket.com/event/${ev.slug}` });
+                if (!marketDataStore[mk.slug]) items.push({ title:ev.title, link:'https://polymarket.com/event/'+ev.slug });
             }
             if (items.length >= 4) break;
         }
         if (!items.length) return;
         const box = document.getElementById('trending-box');
-        box.innerHTML = `<div class="category"><div class="cat-hdr"><h2>📈 Trending Geopolitics</h2></div><div class="trend-grid" id="trend-grid"></div></div>`;
-        const grid = document.getElementById('trend-grid');
+        box.innerHTML = '<div class="category"><div class="cat-hdr"><h2>📈 Trending Geopolitics</h2></div><div class="trend-grid" id="trend-grid"></div></div>';
+        const g = document.getElementById('trend-grid');
         items.forEach(i => {
-            const c = document.createElement('div');
-            c.className = 'trend-card';
+            const c = document.createElement('div'); c.className = 'trend-card';
             c.innerHTML = `<h3>${i.title}</h3><a href="${i.link}" class="m-link" target="_blank" style="margin-top:8px;align-self:flex-start">Explore →</a>`;
-            grid.appendChild(c);
+            g.appendChild(c);
         });
     } catch(e) { console.error('Trending fetch error', e); }
 }
@@ -384,17 +342,12 @@ document.getElementById('login-form').addEventListener('submit', e => {
     if (document.getElementById('password').value === 'IWonULoseBro7') {
         document.getElementById('login').classList.add('hidden');
         document.getElementById('dashboard').classList.remove('hidden');
-        render();
-        updateLivePrices();
-        startTimer();
+        render(); updateLivePrices(); startTimer();
     } else { alert('Incorrect password.'); document.getElementById('password').value=''; }
 });
-
-// Theme toggle
-const toggle = document.getElementById('theme-toggle');
-toggle.addEventListener('click', () => {
+document.getElementById('theme-toggle').addEventListener('click', () => {
     document.body.classList.toggle('light-mode');
-    toggle.classList.toggle('dark');
+    document.getElementById('theme-toggle').classList.toggle('dark');
     document.getElementById('mode-text').textContent = document.body.classList.contains('light-mode') ? 'Light' : 'Dark';
 });
 
@@ -406,19 +359,16 @@ function startTimer() {
         document.getElementById('refresh-timer').textContent = Math.max(0, countdown);
     }, 1000);
 }
-
 function forceRefresh() {
     if (isFetching) return;
-    countdown = TICK;
-    document.getElementById('refresh-timer').textContent = countdown;
+    countdown = TICK; document.getElementById('refresh-timer').textContent = countdown;
     updateLivePrices();
 }
 
 async function updateLivePrices() {
     if (isFetching) return;
     isFetching = true;
-    const btn = document.getElementById('refresh-btn');
-    btn.classList.add('spinning');
+    const btn = document.getElementById('refresh-btn'); btn.classList.add('spinning');
 
     const rows = document.querySelectorAll('.m-row[data-invested]');
     let totInv = 0, totVal = 0;
@@ -430,14 +380,11 @@ async function updateLivePrices() {
         if (!slug || !shares || !invested) return null;
 
         try {
-            const apiUrl = `https://gamma-api.polymarket.com/markets?slug=${slug}`;
-            const res = await fetch(proxiedUrl(apiUrl));
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
+            const data = await proxyFetch('https://gamma-api.polymarket.com/markets?slug=' + slug);
 
             let market = null;
             if (Array.isArray(data) && data.length) market = data[0];
-            else if (data && !Array.isArray(data) && data.outcomePrices) market = data;
+            else if (data && !Array.isArray(data) && (data.outcomePrices || data.lastTradePrice)) market = data;
 
             let price = null;
             if (market) {
@@ -449,7 +396,6 @@ async function updateLivePrices() {
                 }
                 if (price === null || isNaN(price)) price = parseFloat(market.lastTradePrice);
             }
-
             if (price !== null && !isNaN(price)) {
                 row.classList.remove('updated'); void row.offsetWidth; row.classList.add('updated');
                 return { row, price, shares, invested };
@@ -464,52 +410,42 @@ async function updateLivePrices() {
         if (r.price !== null) totVal += applyPnl(r.row, r.price, r.shares, r.invested);
         else totVal += r.invested;
     });
-
     updateSummary(totInv, totVal);
+
     isFetching = false;
-    countdown = TICK;
-    document.getElementById('refresh-timer').textContent = countdown;
+    countdown = TICK; document.getElementById('refresh-timer').textContent = countdown;
     btn.classList.remove('spinning');
 }
 
 function applyPnl(row, price, shares, invested) {
-    const val = shares * price;
-    const pnl = val - invested;
+    const val = shares * price, pnl = val - invested;
     const pct = invested > 0 ? (pnl / invested) * 100 : 0;
-
-    // Update value in both list and grid views
     const slug = row.dataset.market;
 
-    // List view
-    const cvEl = row.querySelector('.current-value');
-    if (cvEl) { cvEl.textContent = '$' + val.toFixed(2); cvEl.style.color = 'inherit'; }
+    // List view elements
+    const cv = row.querySelector('.current-value');
+    if (cv) { cv.textContent = '$'+val.toFixed(2); cv.style.color = 'inherit'; }
+    const pa = row.querySelector('.pnl-amt'), pp = row.querySelector('.pnl-pct'), pb = row.querySelector('.pnl-box');
+    if (pa) pa.textContent = (pnl>=0?'+':'')+' $'+Math.abs(pnl).toFixed(2);
+    if (pp) pp.textContent = '('+(pct>=0?'+':'')+Math.abs(pct).toFixed(1)+'%)';
+    if (pb) { pb.classList.remove('positive','negative','neutral'); pb.classList.add(pnl>.01?'positive':pnl<-.01?'negative':'neutral'); }
 
-    const pnlAmt = row.querySelector('.pnl-amt');
-    const pnlPct = row.querySelector('.pnl-pct');
-    const pnlBox = row.querySelector('.pnl-box');
-    if (pnlAmt) pnlAmt.textContent = (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl).toFixed(2);
-    if (pnlPct) pnlPct.textContent = '(' + (pct >= 0 ? '+' : '') + Math.abs(pct).toFixed(1) + '%)';
-    if (pnlBox) { pnlBox.classList.remove('positive','negative','neutral'); pnlBox.classList.add(pnl > .01 ? 'positive' : pnl < -.01 ? 'negative' : 'neutral'); }
-
-    // Grid view — update .current-value inside card-cell parent
-    const card = document.getElementById('card-' + slug);
+    // Grid view elements
+    const card = document.getElementById('card-'+slug);
     if (card) {
         const cv2 = card.querySelector('.card-head .current-value');
-        if (cv2) { cv2.textContent = '$' + val.toFixed(2); cv2.style.color = pnl > .01 ? 'var(--pos)' : pnl < -.01 ? 'var(--neg)' : 'inherit'; }
+        if (cv2) { cv2.textContent = '$'+val.toFixed(2); cv2.style.color = pnl>.01?'var(--pos)':pnl<-.01?'var(--neg)':'inherit'; }
     }
-
     return val;
 }
 
 function updateSummary(inv, val) {
-    const pnl = val - inv;
-    const pct = inv > 0 ? (pnl / inv) * 100 : 0;
-    const sign = pnl >= 0 ? '+' : '';
-    document.getElementById('tot-inv').textContent = '$' + inv.toFixed(2);
-    document.getElementById('tot-val').textContent = '$' + val.toFixed(2);
+    const pnl = val - inv, pct = inv > 0 ? (pnl/inv)*100 : 0, s = pnl>=0?'+':'';
+    document.getElementById('tot-inv').textContent = '$'+inv.toFixed(2);
+    document.getElementById('tot-val').textContent = '$'+val.toFixed(2);
     const el = document.getElementById('tot-pnl');
-    el.innerHTML = sign + '$' + Math.abs(pnl).toFixed(2) + ' <span style="font-size:.9rem;opacity:.8">(' + sign + Math.abs(pct).toFixed(2) + '%)</span>';
-    el.className = 's-value ' + (pnl > .01 ? 'positive' : pnl < -.01 ? 'negative' : 'neutral');
+    el.innerHTML = s+'$'+Math.abs(pnl).toFixed(2)+' <span style="font-size:.9rem;opacity:.8">('+s+Math.abs(pct).toFixed(2)+'%)</span>';
+    el.className = 's-value '+(pnl>.01?'positive':pnl<-.01?'negative':'neutral');
 }
 </script>
 </body>
