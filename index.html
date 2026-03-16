@@ -105,11 +105,27 @@
         @keyframes flash{0%{background:rgba(59,130,246,.15)}100%{background:transparent}}
         .updated{animation:flash 1s ease-out}
 
-        /* Trending */
-        .trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-        .trend-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;transition:all .2s}
-        .trend-card:hover{border-color:var(--primary);transform:translateY(-2px)}
-        .trend-card h3{font-size:.88rem;margin:0 0 10px;font-weight:500;line-height:1.35}
+        /* Trending — Enhanced */
+        .trend-section{margin-top:32px}
+        .trend-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+        .trend-tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:20px;font-size:.78rem;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
+        .trend-tab:hover{color:var(--text);border-color:var(--muted)}
+        .trend-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+        .trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+        .trend-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;transition:all .2s;position:relative;overflow:hidden}
+        .trend-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+        .trend-card h3{font-size:.92rem;margin:0 0 10px;font-weight:600;line-height:1.35}
+        .trend-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-size:.75rem;color:var(--muted)}
+        .trend-meta .tm{display:flex;flex-direction:column;gap:2px}
+        .trend-meta .tm-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+        .trend-meta .tm-value{font-weight:700;color:var(--text);font-size:.85rem}
+        .trend-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+        .trend-tag{font-size:.65rem;padding:2px 8px;border-radius:10px;background:var(--muted-bg);color:var(--muted);font-weight:500}
+        .trend-context{font-size:.78rem;color:var(--muted);line-height:1.5;max-height:0;overflow:hidden;transition:max-height .4s ease}
+        .trend-card.open .trend-context{max-height:400px}
+        .trend-toggle{font-size:.72rem;color:var(--primary);cursor:pointer;margin-top:8px;font-weight:600;display:inline-flex;align-items:center;gap:4px;background:none;border:none;font-family:inherit;padding:0}
+        .trend-toggle:hover{text-decoration:underline}
+        .trend-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
     </style>
 </head>
 <body>
@@ -309,33 +325,146 @@ function setView(v) {
     updateLivePrices();
 }
 
-// ─── TRENDING ────────────────────────────────────────────
+// ─── ENHANCED TRENDING ───────────────────────────────────
+const TREND_CATEGORIES = {
+    'All': null,
+    'Geopolitics': ['geopolitics','middle east','world','israel'],
+    'Politics': ['politics','elections','trump','congress'],
+    'Crypto': ['crypto','bitcoin','ethereum','defi'],
+    'Sports': ['sports','nba','nfl','soccer','football'],
+    'Science': ['science','ai','technology','space'],
+};
+let trendData = []; // cached
+let activeTrendCat = 'All';
+
 async function fetchTrending() {
     try {
-        const data = await proxyFetch('https://gamma-api.polymarket.com/events?limit=50&active=true&closed=false');
-        const items = [];
+        // Fetch high-volume active events, sorted by 24h volume
+        const data = await proxyFetch('https://gamma-api.polymarket.com/events?limit=100&active=true&closed=false');
+        
+        trendData = [];
         for (const ev of data) {
-            const tags = (ev.tags||[]).map(t => (typeof t==='object'?t.label||t.id:t).toLowerCase());
-            const slug = (ev.slug||'').toLowerCase();
-            const title = (ev.title||'').toLowerCase();
-            const isGeo = tags.some(t=>['geopolitics','middle east','global politics','politics'].includes(t))
-                       || slug.includes('geopolitics') || title.includes('war') || title.includes('election');
-            if (isGeo && ev.markets && ev.markets.length) {
-                const mk = ev.markets[0];
-                if (!marketDataStore[mk.slug]) items.push({ title:ev.title, link:'https://polymarket.com/event/'+ev.slug });
+            if (!ev.markets || !ev.markets.length) continue;
+            // Skip markets already in portfolio
+            const mainMarket = ev.markets[0];
+            if (marketDataStore[mainMarket.slug]) continue;
+
+            const tags = (ev.tags||[]).map(t => (typeof t === 'object' ? (t.label||t.slug||t.id).toLowerCase() : String(t).toLowerCase()));
+            
+            // Parse market data
+            let yesPrice = null;
+            if (mainMarket.outcomePrices) {
+                try {
+                    const pp = typeof mainMarket.outcomePrices === 'string' ? JSON.parse(mainMarket.outcomePrices) : mainMarket.outcomePrices;
+                    yesPrice = parseFloat(pp[0]);
+                } catch(e){}
             }
-            if (items.length >= 4) break;
+            if (yesPrice === null) yesPrice = parseFloat(mainMarket.lastTradePrice || 0);
+
+            const vol24h = parseFloat(ev.volume24hr || mainMarket.volume24hr || 0);
+            const volTotal = parseFloat(ev.volume || mainMarket.volume || 0);
+            const spread = parseFloat(mainMarket.spread || 0);
+            const bestBid = parseFloat(mainMarket.bestBid || 0);
+            const bestAsk = parseFloat(mainMarket.bestAsk || 0);
+
+            // Context from eventMetadata
+            let context = '';
+            if (ev.eventMetadata && ev.eventMetadata.context_description) {
+                context = ev.eventMetadata.context_description;
+            }
+
+            trendData.push({
+                title: ev.title,
+                slug: ev.slug,
+                link: 'https://polymarket.com/event/' + ev.slug,
+                tags: tags,
+                yesPrice: yesPrice,
+                vol24h: vol24h,
+                volTotal: volTotal,
+                spread: spread,
+                bestBid: bestBid,
+                bestAsk: bestAsk,
+                endDate: mainMarket.endDate || ev.endDate,
+                context: context,
+            });
         }
-        if (!items.length) return;
-        const box = document.getElementById('trending-box');
-        box.innerHTML = '<div class="category"><div class="cat-hdr"><h2>📈 Trending Geopolitics</h2></div><div class="trend-grid" id="trend-grid"></div></div>';
-        const g = document.getElementById('trend-grid');
-        items.forEach(i => {
-            const c = document.createElement('div'); c.className = 'trend-card';
-            c.innerHTML = `<h3>${i.title}</h3><a href="${i.link}" class="m-link" target="_blank" style="margin-top:8px;align-self:flex-start">Explore →</a>`;
-            g.appendChild(c);
-        });
+
+        // Sort by 24h volume descending
+        trendData.sort((a, b) => b.vol24h - a.vol24h);
+
+        renderTrending();
     } catch(e) { console.error('Trending fetch error', e); }
+}
+
+function renderTrending() {
+    const box = document.getElementById('trending-box');
+    if (!trendData.length) { box.innerHTML = ''; return; }
+
+    // Filter by active category
+    let filtered = trendData;
+    const catTags = TREND_CATEGORIES[activeTrendCat];
+    if (catTags) {
+        filtered = trendData.filter(d => d.tags.some(t => catTags.some(ct => t.includes(ct))));
+    }
+    // Take top 8
+    filtered = filtered.slice(0, 8);
+
+    // Build HTML
+    let tabsHtml = Object.keys(TREND_CATEGORIES).map(cat =>
+        `<button class="trend-tab${cat === activeTrendCat ? ' active' : ''}" onclick="setTrendCat('${cat}')">${cat}</button>`
+    ).join('');
+
+    let cardsHtml = filtered.map((d, idx) => {
+        const pricePct = (d.yesPrice * 100).toFixed(0);
+        const vol24hFmt = d.vol24h >= 1000 ? '$' + (d.vol24h / 1000).toFixed(1) + 'k' : '$' + d.vol24h.toFixed(0);
+        const volTotalFmt = d.volTotal >= 1000000 ? '$' + (d.volTotal / 1000000).toFixed(2) + 'M' : d.volTotal >= 1000 ? '$' + (d.volTotal / 1000).toFixed(1) + 'k' : '$' + d.volTotal.toFixed(0);
+        const spreadFmt = (d.spread * 100).toFixed(1) + '¢';
+        const endFmt = d.endDate ? new Date(d.endDate).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '—';
+
+        const tagsHtml = d.tags.slice(0, 4).map(t => `<span class="trend-tag">${t}</span>`).join('');
+
+        const contextSnippet = d.context ? d.context.substring(0, 180) + (d.context.length > 180 ? '...' : '') : '';
+        const hasContext = d.context.length > 0;
+
+        return `
+        <div class="trend-card" id="trend-${idx}">
+            <h3>${d.title}</h3>
+            <div class="trend-tags">${tagsHtml}</div>
+            <div class="trend-meta">
+                <div class="tm"><span class="tm-label">YES Price</span><span class="tm-value" style="color:${d.yesPrice > 0.5 ? 'var(--pos)' : 'var(--neg)'}">${pricePct}¢</span></div>
+                <div class="tm"><span class="tm-label">24h Vol</span><span class="tm-value">${vol24hFmt}</span></div>
+                <div class="tm"><span class="tm-label">Total Vol</span><span class="tm-value">${volTotalFmt}</span></div>
+                <div class="tm"><span class="tm-label">Spread</span><span class="tm-value">${spreadFmt}</span></div>
+                <div class="tm"><span class="tm-label">Ends</span><span class="tm-value">${endFmt}</span></div>
+            </div>
+            ${hasContext ? `
+                <div class="trend-context" id="ctx-${idx}">${d.context}</div>
+                <button class="trend-toggle" onclick="toggleCtx(${idx})">📊 Show Analysis <span id="ctx-arrow-${idx}">▼</span></button>
+            ` : ''}
+            <div class="trend-card-footer">
+                <a href="${d.link}" class="m-link" target="_blank">↗ Open Market</a>
+            </div>
+        </div>`;
+    }).join('');
+
+    box.innerHTML = `
+        <div class="trend-section">
+            <div class="cat-hdr" style="cursor:default"><h2>📈 Trending Markets</h2></div>
+            <div class="trend-tabs">${tabsHtml}</div>
+            <div class="trend-grid">${cardsHtml}</div>
+        </div>`;
+}
+
+function setTrendCat(cat) {
+    activeTrendCat = cat;
+    renderTrending();
+}
+
+function toggleCtx(idx) {
+    const card = document.getElementById('trend-' + idx);
+    const arrow = document.getElementById('ctx-arrow-' + idx);
+    card.classList.toggle('open');
+    arrow.textContent = card.classList.contains('open') ? '▲' : '▼';
 }
 
 // ─── AUTH ────────────────────────────────────────────────
