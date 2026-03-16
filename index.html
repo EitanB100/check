@@ -10,6 +10,7 @@
             --bg-color: #0b0f19;
             --text-color: #e2e8f0;
             --card-bg: #151b2b;
+            --card-expanded-bg: #1a2235;
             --border-color: #1f2937;
             --primary: #3b82f6;
             --primary-hover: #2563eb;
@@ -25,6 +26,7 @@
             --bg-color: #f8fafc;
             --text-color: #0f172a;
             --card-bg: #ffffff;
+            --card-expanded-bg: #f1f5f9;
             --border-color: #e2e8f0;
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
@@ -67,7 +69,7 @@
             margin-top: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 12px;
         }
         
         .timer-container .pulse {
@@ -83,6 +85,27 @@
             70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
         }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .refresh-btn:hover {
+            background: var(--border-color);
+        }
+        .refresh-btn.spinning svg {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .header-right {
             display: flex;
@@ -188,32 +211,36 @@
         }
 
         .category-content {
-            display: none;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
         }
-
         .category-content.collapsed {
             display: none;
         }
 
-        .market-row {
+        /* Market Card & Expansion logic */
+        .market-container {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 20px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            overflow: hidden;
             transition: all 0.2s;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
 
-        .market-row:hover {
+        .market-container:hover {
             border-color: var(--primary);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transform: translateY(-2px);
+        }
+
+        .market-row {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
         }
 
         .market-info {
@@ -236,9 +263,14 @@
             align-items: center;
             gap: 4px;
             font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(59, 130, 246, 0.1);
+            transition: background 0.2s;
         }
         .market-link:hover {
-            text-decoration: underline;
+            background: rgba(59, 130, 246, 0.2);
+            text-decoration: none;
         }
 
         .market-stats {
@@ -289,6 +321,36 @@
         .positive { background-color: var(--positive-bg); color: var(--positive); }
         .negative { background-color: var(--negative-bg); color: var(--negative); }
         .neutral { background-color: var(--neutral-bg); color: var(--neutral); }
+
+        .expand-icon {
+            margin-left: 20px;
+            color: var(--neutral);
+            transition: transform 0.3s;
+        }
+        .market-container.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .market-expanded-content {
+            background: var(--card-expanded-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .market-container.expanded .market-expanded-content {
+            max-height: 400px; /* arbitrary large max height */
+            padding: 20px;
+        }
+        .market-expanded-content iframe {
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+        }
 
         /* Login Screen */
         #login {
@@ -400,7 +462,11 @@
                 <h1>Prediction Markets</h1>
                 <div class="timer-container">
                     <div class="pulse"></div>
-                    Live update in <span id="refresh-timer" style="font-weight: 600; color: var(--text-color); margin-left: 4px;">15</span>s
+                    <span>Auto refresh in <strong id="refresh-timer" style="color: var(--text-color);">15</strong>s</span>
+                    <button class="refresh-btn" onclick="forceRefresh()" id="manual-refresh-btn" title="Refresh Now">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        Refresh
+                    </button>
                 </div>
             </div>
             <div class="header-right">
@@ -525,6 +591,7 @@
         let marketDataStore = {};
         const REFRESH_INTERVAL_SECONDS = 15;
         let countdown = REFRESH_INTERVAL_SECONDS;
+        let isFetching = false;
 
         // --- RENDER FUNCTIONS ---
         function renderDashboard() {
@@ -541,6 +608,11 @@
             container.appendChild(trendingDiv);
 
             fetchTrendingGeopolitics();
+        }
+
+        function toggleMarketExpand(marketId) {
+            const container = document.getElementById(`container-${marketId}`);
+            container.classList.toggle('expanded');
         }
 
         function buildCategoryHtml(categoryName, markets) {
@@ -568,12 +640,22 @@
             markets.forEach(market => {
                 marketDataStore[market.slug] = market;
 
+                const wrapper = document.createElement('div');
+                wrapper.className = 'market-container';
+                wrapper.id = `container-${market.slug}`;
+
                 const row = document.createElement('div');
                 row.className = 'market-row';
                 row.id = `row-${market.slug}`;
                 row.setAttribute('data-market', market.slug);
                 row.setAttribute('data-shares', market.shares);
                 row.setAttribute('data-invested', market.invested);
+
+                // Clicking row expands to show chart, but clicking link opens new tab
+                row.onclick = (e) => {
+                    if (e.target.closest('.market-link')) return; 
+                    toggleMarketExpand(market.slug);
+                };
 
                 row.innerHTML = `
                     <div class="market-info">
@@ -594,15 +676,27 @@
                         </div>
                         <div class="stat-group">
                             <span class="stat-label">Value</span>
-                            <span class="stat-value current-value" style="color:var(--neutral)">...</span>
+                            <span class="stat-value current-value" style="color:var(--neutral)">--</span>
                         </div>
                         <div class="pnl-box neutral profit-loss">
-                            <span class="pnl-amount">-</span>
+                            <span class="pnl-amount">--</span>
                             <span class="pnl-percent"></span>
+                        </div>
+                        <div class="expand-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </div>
                     </div>
                 `;
-                content.appendChild(row);
+
+                const expandContent = document.createElement('div');
+                expandContent.className = 'market-expanded-content';
+                expandContent.innerHTML = `
+                    <iframe title="${market.title}" src="https://embed.polymarket.com/market?market=${market.slug}&theme=dark&creator=EthanB123&height=300" height="300" frameborder="0" allowtransparency="true"></iframe>
+                `;
+
+                wrapper.appendChild(row);
+                wrapper.appendChild(expandContent);
+                content.appendChild(wrapper);
             });
             
             catDiv.appendChild(header);
@@ -659,7 +753,7 @@
                         card.className = 'trending-card';
                         card.innerHTML = `
                             <h3>${m.title}</h3>
-                            <a href="${m.link}" class="market-link" target="_blank">
+                            <a href="${m.link}" class="market-link" target="_blank" style="margin-top: 12px; align-self: flex-start;">
                                 Explore Market →
                             </a>
                         `;
@@ -704,19 +798,32 @@
             setInterval(() => {
                 countdown--;
                 if (countdown <= 0) {
-                    countdown = REFRESH_INTERVAL_SECONDS;
                     updateLivePrices();
                 }
-                document.getElementById('refresh-timer').textContent = countdown;
+                document.getElementById('refresh-timer').textContent = countdown < 0 ? 0 : countdown;
             }, 1000);
         }
 
+        function forceRefresh() {
+            if (isFetching) return;
+            countdown = REFRESH_INTERVAL_SECONDS;
+            document.getElementById('refresh-timer').textContent = countdown;
+            updateLivePrices();
+        }
+
         async function updateLivePrices() {
+            if (isFetching) return;
+            isFetching = true;
+            
+            const refreshBtn = document.getElementById('manual-refresh-btn');
+            refreshBtn.classList.add('spinning');
+
             const marketRows = document.querySelectorAll('.market-row[data-invested]');
             let totalInvested = 0;
             let totalValue = 0;
 
-            // Fetch concurrently for speed, but catch errors individually
+            // Fetch concurrently from gamma-api /events matching slug. 
+            // Our previous call failed because /events structure is nested.
             const promises = Array.from(marketRows).map(async (row) => {
                 const marketId = row.getAttribute('data-market');
                 const shares = parseFloat(row.getAttribute('data-shares'));
@@ -725,16 +832,17 @@
                 if (!marketId || !shares || !invested) return null;
                 
                 try {
-                    // Fetch directly from Polymarket Gamma Markets API endpoint using slug
-                    const res = await fetch(`https://gamma-api.polymarket.com/markets?slug=${marketId}`);
+                    // /events?slug=XYZ returns an array of events
+                    const res = await fetch(`https://gamma-api.polymarket.com/events?slug=${marketId}`);
                     if (!res.ok) throw new Error("API returned status " + res.status);
                     
                     const data = await res.json();
                     
-                    // The endpoint returns an array of matching markets (usually length 1)
-                    if (data && data.length > 0) {
-                        const market = data[0];
-                        let price = null;
+                    let price = null;
+
+                    // Parse nested events -> markets[0] array
+                    if (data && data.length > 0 && data[0].markets && data[0].markets.length > 0) {
+                        const market = data[0].markets[0]; // main condition
                         
                         // Parse JSON outcome prices. Index 0 is typically the YES price on binary.
                         if (market.outcomePrices) {
@@ -743,25 +851,19 @@
                                 price = parseFloat(parsedPrices[0]);
                             } catch(e){}
                         }
-                        
-                        // Fallback to lastTradePrice if arrays couldn't be parsed
-                        if (price === null || isNaN(price)) {
-                            price = market.lastTradePrice;
-                        }
+                    }
 
-                        if (price !== null && price !== undefined) {
-                            row.classList.remove('updated');
-                            void row.offsetWidth; // trigger reflow
-                            row.classList.add('updated');
-                            
-                            return { row, price, shares, invested };
-                        }
+                    if (price !== null && !isNaN(price)) {
+                        row.classList.remove('updated');
+                        void row.offsetWidth; // trigger reflow
+                        row.classList.add('updated');
+                        return { row, price, shares, invested };
                     }
                 } catch (error) {
                     console.error(`Failed fetching ${marketId}:`, error);
                 }
                 
-                // If fetch fails, return initial invested value placeholder
+                // If fetch fails, return null price flag
                 return { row, price: null, shares, invested };
             });
 
@@ -775,11 +877,16 @@
                     const val = updatePnL(res.row, res.price, res.shares, res.invested);
                     totalValue += val;
                 } else {
-                    totalValue += res.invested; // Neutral fallback
+                    totalValue += res.invested; // Neutral fallback if api call block or failed
                 }
             });
             
             updateTotalSummary(totalInvested, totalValue);
+
+            isFetching = false;
+            countdown = REFRESH_INTERVAL_SECONDS;
+            document.getElementById('refresh-timer').textContent = countdown;
+            refreshBtn.classList.remove('spinning');
         }
 
         function updatePnL(row, currentPrice, shares, invested) {
