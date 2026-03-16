@@ -659,7 +659,7 @@ function applyPnl(row, price, shares, invested) {
         if (cv2) { cv2.textContent = '$'+val.toFixed(2); cv2.style.color = pnl>.01?'var(--pos)':pnl<-.01?'var(--neg)':'inherit'; }
         const cp = card.querySelector('.card-head .card-pnl');
         if (cp) {
-            const pnlLabel = pnl >= 0 ? 'Profit' : 'Loss';
+            const pnlLabel = pnl >= 0 ? 'Increase since invested' : 'Decrease since invested';
             cp.textContent = pnlLabel + ': $' + Math.abs(pnl).toFixed(2);
             cp.style.color = pnl>.01?'var(--pos)':pnl<-.01?'var(--neg)':'var(--muted)';
         }
