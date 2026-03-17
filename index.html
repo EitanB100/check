@@ -257,9 +257,17 @@ async function fetchPositions() {
             const outcomeIdx = pos.outcomeIndex ?? (pos.outcome === 'No' ? 1 : 0);
             const invested = parseFloat(pos.initialValue || 0);
 
-            // Derive a readable category from eventSlug
-            const catName = eventSlug.split('-').slice(0, 3).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Portfolio';
-
+            // Derive a readable category from eventSlug using common patterns
+            let catName = 'Other Markets';
+            if (eventSlug.includes('iran-leadership-change')) catName = 'Iran Leadership Change';
+            else if (eventSlug.includes('highest-temperature-in')) catName = 'Highest Temperature Cities';
+            else if (eventSlug.includes('iran-x-israel')) catName = 'Iran vs Israel Conflict';
+            else if (eventSlug.includes('strait-of-hormuz')) catName = 'Strait of Hormuz';
+            else if (eventSlug.includes('cuban-regime-falls')) catName = 'Cuban Regime Falls';
+            else if (eventSlug.includes('naim-qassem-out')) catName = 'Naim Qassem Out';
+            else if (eventSlug.includes('what-will-trump-say')) catName = 'What Will Trump Say';
+            else if (eventSlug.includes('who-will-trump')) catName = 'Who Will Trump Meet';
+            else if (eventSlug) catName = eventSlug.split('-').slice(0, 3).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             if (!catMap[catName]) catMap[catName] = [];
             catMap[catName].push({
                 title: title,
